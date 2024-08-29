@@ -10,3 +10,7 @@ java.sourceCompatibility = JavaVersion.VERSION_21
 repositories {
     mavenCentral()
 }
+
+dependencies {
+    implementation("org.telegram:telegrambots:6.9.7.1")
+}
