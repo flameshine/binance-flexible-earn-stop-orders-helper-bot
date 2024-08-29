@@ -24,7 +24,7 @@ public class BinanceFlexibleEarnStopLimitsHelperBot extends TelegramLongPollingB
 
         var sendMessage = SendMessage.builder()
             .chatId(userId)
-            .text("Awesome!")
+            .text(message.getText())
             .build();
 
         try {
