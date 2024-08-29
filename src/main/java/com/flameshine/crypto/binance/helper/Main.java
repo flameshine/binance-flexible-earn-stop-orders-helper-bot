@@ -8,11 +8,18 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 import com.flameshine.crypto.binance.helper.bot.BinanceFlexibleEarnStopLimitsHelperBot;
+import com.flameshine.crypto.binance.helper.config.BotConfig;
+import com.flameshine.crypto.binance.helper.handler.impl.MainMenuButtonHandler;
+import com.flameshine.crypto.binance.helper.handler.impl.MainMenuHandler;
+import com.flameshine.crypto.binance.helper.handler.impl.StartHandler;
+
+// TODO: set up logging
+// TODO: configure commands programmatically
+// TODO: review language options
 
 public class Main {
 
-    private static final String TOKEN;
-    private static final String USERNAME;
+    private static final BotConfig CONFIG;
 
     static {
 
@@ -24,13 +31,23 @@ public class Main {
             throw new ExceptionInInitializerError(e);
         }
 
-        TOKEN = properties.getProperty("token");
-        USERNAME = properties.getProperty("username");
+        CONFIG = new BotConfig(
+            properties.getProperty("token"),
+            properties.getProperty("username")
+        );
     }
 
     public static void main(String... args) throws TelegramApiException {
+
         var botsApi = new TelegramBotsApi(DefaultBotSession.class);
-        var bot = new BinanceFlexibleEarnStopLimitsHelperBot(TOKEN, USERNAME);
+
+        var bot = new BinanceFlexibleEarnStopLimitsHelperBot(
+            new StartHandler(),
+            new MainMenuHandler(),
+            new MainMenuButtonHandler(),
+            CONFIG
+        );
+
         botsApi.registerBot(bot);
     }
 }

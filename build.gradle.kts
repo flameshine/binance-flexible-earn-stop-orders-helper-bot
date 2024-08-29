@@ -13,4 +13,5 @@ repositories {
 
 dependencies {
     implementation("org.telegram:telegrambots:6.9.7.1")
+    implementation("com.google.guava:guava:33.3.0-jre")
 }

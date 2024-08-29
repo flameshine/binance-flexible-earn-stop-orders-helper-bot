@@ -1,41 +1,80 @@
 package com.flameshine.crypto.binance.helper.bot;
 
+import java.util.stream.Stream;
+
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import com.flameshine.crypto.binance.helper.config.BotConfig;
+import com.flameshine.crypto.binance.helper.enums.Command;
+import com.flameshine.crypto.binance.helper.handler.ButtonHandler;
+import com.flameshine.crypto.binance.helper.handler.UpdateHandler;
+
+// TODO: add Binance account set up before the menu
+// TODO: implement "Accounts" functionality
+// TODO: implement "Orders" functionality
+
 public class BinanceFlexibleEarnStopLimitsHelperBot extends TelegramLongPollingBot {
 
+    private final UpdateHandler startHandler;
+    private final UpdateHandler mainMenuHandler;
+    private final ButtonHandler mainMenuButtonHandler;
     private final String username;
 
-    public BinanceFlexibleEarnStopLimitsHelperBot(String token, String username) {
-        super(token);
-        this.username = username;
+    public BinanceFlexibleEarnStopLimitsHelperBot(
+        UpdateHandler startHandler,
+        UpdateHandler mainMenuHandler,
+        ButtonHandler mainMenuButtonHandler,
+        BotConfig config
+    ) {
+        super(config.token());
+        this.startHandler = startHandler;
+        this.mainMenuHandler = mainMenuHandler;
+        this.mainMenuButtonHandler = mainMenuButtonHandler;
+        this.username = config.username();
     }
 
     @Override
     public void onUpdateReceived(Update update) {
 
         var message = update.getMessage();
-        var userId = message.getFrom().getId();
 
-        System.out.printf("User ID: %s, Content: '%s'", userId, message.getText());
+        // TODO: review this condition
 
-        var sendMessage = SendMessage.builder()
-            .chatId(userId)
-            .text(message.getText())
-            .build();
+        if (message == null) {
+            var methods = mainMenuButtonHandler.handle(update.getCallbackQuery());
+            methods.forEach(this::executeMethod);
+            return;
+        }
 
-        try {
-            execute(sendMessage);
-        } catch (TelegramApiException e) {
-            throw new RuntimeException(e);
+        var command = Command.fromValue(message.getText());
+
+        if (Command.START.equals(command)) {
+
+            var startMethods = startHandler.handle(update);
+            var mainMenuMethods = mainMenuHandler.handle(update);
+
+            Stream.concat(startMethods.stream(), mainMenuMethods.stream())
+                .forEach(this::executeMethod);
+
+        } else if (Command.MENU.equals(command)) {
+            var methods = mainMenuHandler.handle(update);
+            methods.forEach(this::executeMethod);
         }
     }
 
     @Override
     public String getBotUsername() {
         return username;
+    }
+
+    private void executeMethod(BotApiMethod<?> method) {
+        try {
+            execute(method);
+        } catch (TelegramApiException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
