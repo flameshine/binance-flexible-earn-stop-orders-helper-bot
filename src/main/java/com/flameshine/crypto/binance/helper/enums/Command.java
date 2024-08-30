@@ -1,9 +1,18 @@
 package com.flameshine.crypto.binance.helper.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum Command {
 
-    START,
-    MENU;
+    START("Start the bot"),
+    MENU("Main menu");
+
+    private final String description;
+
+    Command(String description) {
+        this.description = description;
+    }
 
     public static Command fromValue(String value) {
 

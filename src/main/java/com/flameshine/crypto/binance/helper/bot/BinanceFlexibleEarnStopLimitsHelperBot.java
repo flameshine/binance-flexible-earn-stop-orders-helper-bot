@@ -1,12 +1,15 @@
 package com.flameshine.crypto.binance.helper.bot;
 
+import java.util.Arrays;
 import java.util.stream.Stream;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import com.flameshine.crypto.binance.helper.config.BotConfig;
@@ -33,6 +36,7 @@ public class BinanceFlexibleEarnStopLimitsHelperBot extends TelegramLongPollingB
         this.mainMenuHandler = new MainMenuHandler();
         this.menuOrchestrator = new MenuOrchestrator();
         this.username = config.username();
+        registerCommands();
     }
 
     @Override
@@ -63,6 +67,19 @@ public class BinanceFlexibleEarnStopLimitsHelperBot extends TelegramLongPollingB
     @Override
     public String getBotUsername() {
         return username;
+    }
+
+    private void registerCommands() {
+
+        var commands = Arrays.stream(Command.values())
+            .map(command -> new BotCommand(command.toString(), command.getDescription()))
+            .toList();
+
+        var setMyCommands = SetMyCommands.builder()
+            .commands(commands)
+            .build();
+
+        executeMethod(setMyCommands);
     }
 
     private void executeMethod(BotApiMethod<?> method) {
