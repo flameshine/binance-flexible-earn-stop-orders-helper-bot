@@ -1,28 +1,28 @@
-package com.flameshine.crypto.binance.helper.handler.impl;
+package com.flameshine.crypto.binance.helper.handler.command.impl;
 
 import java.util.List;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Named;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-import com.flameshine.crypto.binance.helper.handler.UpdateHandler;
+import com.flameshine.crypto.binance.helper.enums.Keyboard;
+import com.flameshine.crypto.binance.helper.handler.command.CommandHandler;
 import com.flameshine.crypto.binance.helper.util.Messages;
 
-@ApplicationScoped
-@Named("StartHandler")
-public class StartHandler implements UpdateHandler {
+public class MainMenuHandler implements CommandHandler {
 
-    public StartHandler() {}
+    public MainMenuHandler() {}
 
     @Override
     public List<BotApiMethod<?>> handle(Update update) {
 
         var sendMessage = SendMessage.builder()
             .chatId(update.getMessage().getFrom().getId())
-            .text(Messages.INITIAL)
+            .parseMode(ParseMode.HTML)
+            .replyMarkup(Keyboard.MAIN_MENU.getMarkup())
+            .text(Messages.MAIN_MENU)
             .build();
 
         return List.of(sendMessage);

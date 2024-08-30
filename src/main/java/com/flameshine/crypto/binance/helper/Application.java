@@ -8,10 +8,10 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 import com.flameshine.crypto.binance.helper.bot.BinanceFlexibleEarnStopLimitsHelperBot;
 
-// TODO: check keys
 // TODO: set up logging
 // TODO: configure commands programmatically
 // TODO: review language options
+// TODO: add proper README
 
 @QuarkusMain
 public class Application implements QuarkusApplication {

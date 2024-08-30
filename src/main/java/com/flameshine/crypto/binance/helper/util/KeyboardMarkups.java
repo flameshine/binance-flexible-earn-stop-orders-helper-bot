@@ -2,12 +2,14 @@ package com.flameshine.crypto.binance.helper.util;
 
 import java.util.List;
 
+import lombok.experimental.UtilityClass;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 // TODO: add emojis
 
-public final class KeyboardMarkups {
+@UtilityClass
+public class KeyboardMarkups {
 
     public static InlineKeyboardMarkup mainMenu() {
 
@@ -45,7 +47,7 @@ public final class KeyboardMarkups {
 
         var myAccounts = InlineKeyboardButton.builder()
             .text("My accounts")
-            .callbackData("myAccounts")
+            .callbackData("my_accounts")
             .build();
 
         var disconnect = InlineKeyboardButton.builder()
@@ -89,6 +91,4 @@ public final class KeyboardMarkups {
             .keyboardRow(List.of(newOrder, orders, cancel, back))
             .build();
     }
-
-    private KeyboardMarkups() {}
 }

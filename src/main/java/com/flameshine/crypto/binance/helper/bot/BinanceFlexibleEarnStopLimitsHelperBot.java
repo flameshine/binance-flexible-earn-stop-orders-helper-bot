@@ -4,7 +4,6 @@ import java.util.stream.Stream;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.inject.Named;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -12,49 +11,40 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import com.flameshine.crypto.binance.helper.config.BotConfig;
 import com.flameshine.crypto.binance.helper.enums.Command;
-import com.flameshine.crypto.binance.helper.handler.ButtonHandler;
-import com.flameshine.crypto.binance.helper.handler.UpdateHandler;
+import com.flameshine.crypto.binance.helper.handler.command.CommandHandler;
+import com.flameshine.crypto.binance.helper.handler.command.impl.MainMenuHandler;
+import com.flameshine.crypto.binance.helper.handler.command.impl.StartHandler;
+import com.flameshine.crypto.binance.helper.orchestrator.MenuOrchestrator;
 
 // TODO: add Binance account set up before the menu
-// TODO: implement "Accounts" functionality
-// TODO: implement "Orders" functionality
 
 @ApplicationScoped
 public class BinanceFlexibleEarnStopLimitsHelperBot extends TelegramLongPollingBot {
 
-    private final UpdateHandler startHandler;
-    private final UpdateHandler mainMenuHandler;
-    private final ButtonHandler mainMenuButtonHandler;
+    private final CommandHandler startHandler;
+    private final CommandHandler mainMenuHandler;
+    private final MenuOrchestrator menuOrchestrator;
     private final String username;
 
     @Inject
-    public BinanceFlexibleEarnStopLimitsHelperBot(
-        @Named("StartHandler") UpdateHandler startHandler,
-        @Named("MainMenuHandler") UpdateHandler mainMenuHandler,
-        @Named("MainMenuButtonHandler") ButtonHandler mainMenuButtonHandler,
-        BotConfig config
-    ) {
+    public BinanceFlexibleEarnStopLimitsHelperBot(BotConfig config) {
         super(config.token());
-        this.startHandler = startHandler;
-        this.mainMenuHandler = mainMenuHandler;
-        this.mainMenuButtonHandler = mainMenuButtonHandler;
+        this.startHandler = new StartHandler();
+        this.mainMenuHandler = new MainMenuHandler();
+        this.menuOrchestrator = new MenuOrchestrator();
         this.username = config.username();
     }
 
     @Override
     public void onUpdateReceived(Update update) {
 
-        var message = update.getMessage();
-
-        // TODO: review this condition
-
-        if (message == null) {
-            var methods = mainMenuButtonHandler.handle(update.getCallbackQuery());
+        if (update.hasCallbackQuery()) {
+            var methods = menuOrchestrator.orchestrate(update.getCallbackQuery());
             methods.forEach(this::executeMethod);
             return;
         }
 
-        var command = Command.fromValue(message.getText());
+        var command = Command.fromValue(update.getMessage().getText());
 
         if (Command.START.equals(command)) {
 

@@ -1,4 +1,4 @@
-package com.flameshine.crypto.binance.helper.handler.impl;
+package com.flameshine.crypto.binance.helper.handler.button.impl;
 
 import java.util.List;
 
@@ -11,16 +11,16 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageRe
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 
-import com.flameshine.crypto.binance.helper.enums.MainMenuButtonData;
-import com.flameshine.crypto.binance.helper.handler.ButtonHandler;
-import com.flameshine.crypto.binance.helper.util.KeyboardMarkups;
+import com.flameshine.crypto.binance.helper.enums.AccountMenuButton;
+import com.flameshine.crypto.binance.helper.enums.Keyboard;
+import com.flameshine.crypto.binance.helper.handler.button.ButtonHandler;
 import com.flameshine.crypto.binance.helper.util.Messages;
 
 @ApplicationScoped
-@Named("MainMenuButtonHandler")
-public class MainMenuButtonHandler implements ButtonHandler {
+@Named("AccountMenuButtonHandler")
+public class AccountMenuButtonHandler implements ButtonHandler {
 
-    public MainMenuButtonHandler() {}
+    public AccountMenuButtonHandler() {}
 
     @Override
     public List<BotApiMethod<?>> handle(CallbackQuery query) {
@@ -31,7 +31,7 @@ public class MainMenuButtonHandler implements ButtonHandler {
         var newText = EditMessageText.builder()
             .chatId(chatId)
             .messageId(message.getMessageId())
-            .text(Messages.MAIN_MENU)
+            .text(Messages.ACCOUNT_MENU)
             .build();
 
         var newMarkup = EditMessageReplyMarkup.builder()
@@ -39,34 +39,34 @@ public class MainMenuButtonHandler implements ButtonHandler {
             .messageId(message.getMessageId())
             .build();
 
-        var buttonData = MainMenuButtonData.fromValue(query.getData());
+        var sendMessageBuilder = SendMessage.builder()
+            .chatId(chatId);
+
+        var buttonData = AccountMenuButton.fromValue(query.getData());
 
         switch (buttonData) {
 
-            case ACCOUNTS -> {
-                newText.setText(Messages.ACCOUNT_MENU);
-                newMarkup.setReplyMarkup(KeyboardMarkups.accountMenu());
-            }
-
-            case ORDERS -> {
-                newText.setText(Messages.ORDER_MENU);
-                newMarkup.setReplyMarkup(KeyboardMarkups.orderMenu());
-            }
-
-            case HELP -> {
-                var sendMessage =  SendMessage.builder()
-                    .chatId(chatId)
-                    .text(Messages.HELP)
+            case CONNECT -> {
+                var sendMessage = sendMessageBuilder.text(Messages.CONNECT)
                     .build();
                 return List.of(sendMessage);
             }
 
-            case SUPPORT -> {
-                var sendMessage = SendMessage.builder()
-                    .chatId(chatId)
-                    .text(Messages.SUPPORT)
+            case MY_ACCOUNTS -> {
+                var sendMessage = sendMessageBuilder.text(Messages.MY_ACCOUNTS)
                     .build();
                 return List.of(sendMessage);
+            }
+
+            case DISCONNECT -> {
+                var sendMessage = sendMessageBuilder.text(Messages.DISCONNECT)
+                    .build();
+                return List.of(sendMessage);
+            }
+
+            case BACK -> {
+                newText.setText(Messages.MAIN_MENU);
+                newMarkup.setReplyMarkup(Keyboard.MAIN_MENU.getMarkup());
             }
         }
 
