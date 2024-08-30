@@ -43,9 +43,9 @@ public final class KeyboardMarkups {
             .callbackData("connect")
             .build();
 
-        var show = InlineKeyboardButton.builder()
-            .text("Show connected accounts")
-            .callbackData("show")
+        var myAccounts = InlineKeyboardButton.builder()
+            .text("My accounts")
+            .callbackData("myAccounts")
             .build();
 
         var disconnect = InlineKeyboardButton.builder()
@@ -59,24 +59,24 @@ public final class KeyboardMarkups {
             .build();
 
         return InlineKeyboardMarkup.builder()
-            .keyboardRow(List.of(connect, show, disconnect, back))
+            .keyboardRow(List.of(connect, myAccounts, disconnect, back))
             .build();
     }
 
     public static InlineKeyboardMarkup orderMenu() {
 
         var newOrder = InlineKeyboardButton.builder()
-            .text("New order")
+            .text("New")
             .callbackData("new")
             .build();
 
         var orders = InlineKeyboardButton.builder()
-            .text("Active orders")
+            .text("Your orders")
             .callbackData("orders")
             .build();
 
         var cancel = InlineKeyboardButton.builder()
-            .text("Cancel an order")
+            .text("Cancel")
             .callbackData("cancel")
             .build();
 

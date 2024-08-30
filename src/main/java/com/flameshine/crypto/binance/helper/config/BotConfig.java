@@ -1,6 +1,9 @@
 package com.flameshine.crypto.binance.helper.config;
 
-public record BotConfig(
-    String token,
-    String username
-) {}
+import io.smallrye.config.ConfigMapping;
+
+@ConfigMapping(prefix = "bot")
+public interface BotConfig {
+    String token();
+    String username();
+}

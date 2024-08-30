@@ -2,6 +2,8 @@ package com.flameshine.crypto.binance.helper.handler.impl;
 
 import java.util.List;
 
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Named;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -14,6 +16,8 @@ import com.flameshine.crypto.binance.helper.handler.ButtonHandler;
 import com.flameshine.crypto.binance.helper.util.KeyboardMarkups;
 import com.flameshine.crypto.binance.helper.util.Messages;
 
+@ApplicationScoped
+@Named("MainMenuButtonHandler")
 public class MainMenuButtonHandler implements ButtonHandler {
 
     public MainMenuButtonHandler() {}

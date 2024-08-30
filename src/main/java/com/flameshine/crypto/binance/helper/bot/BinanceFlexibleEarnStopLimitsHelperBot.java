@@ -2,6 +2,9 @@ package com.flameshine.crypto.binance.helper.bot;
 
 import java.util.stream.Stream;
 
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -16,6 +19,7 @@ import com.flameshine.crypto.binance.helper.handler.UpdateHandler;
 // TODO: implement "Accounts" functionality
 // TODO: implement "Orders" functionality
 
+@ApplicationScoped
 public class BinanceFlexibleEarnStopLimitsHelperBot extends TelegramLongPollingBot {
 
     private final UpdateHandler startHandler;
@@ -23,10 +27,11 @@ public class BinanceFlexibleEarnStopLimitsHelperBot extends TelegramLongPollingB
     private final ButtonHandler mainMenuButtonHandler;
     private final String username;
 
+    @Inject
     public BinanceFlexibleEarnStopLimitsHelperBot(
-        UpdateHandler startHandler,
-        UpdateHandler mainMenuHandler,
-        ButtonHandler mainMenuButtonHandler,
+        @Named("StartHandler") UpdateHandler startHandler,
+        @Named("MainMenuHandler") UpdateHandler mainMenuHandler,
+        @Named("MainMenuButtonHandler") ButtonHandler mainMenuButtonHandler,
         BotConfig config
     ) {
         super(config.token());
