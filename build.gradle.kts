@@ -27,7 +27,7 @@ dependencies {
     implementation("io.quarkus:quarkus-hibernate-orm")
     implementation("io.quarkus:quarkus-jdbc-mysql")
     implementation("org.telegram:telegrambots:6.9.7.1")
-    implementation("com.google.guava:guava:33.3.0-jre")
+//    implementation("com.google.guava:guava:33.3.0-jre")
     compileOnly("org.projectlombok:lombok:$lombokVersion")
     annotationProcessor("org.projectlombok:lombok:$lombokVersion")
     runtimeOnly("javax.xml.bind:jaxb-api:2.3.1") // required by Quarkus

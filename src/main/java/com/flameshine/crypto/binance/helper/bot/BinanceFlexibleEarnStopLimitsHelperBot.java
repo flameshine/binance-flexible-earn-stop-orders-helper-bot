@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.google.common.base.Preconditions;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -21,7 +20,8 @@ import com.flameshine.crypto.binance.helper.handler.command.CommandHandler;
 import com.flameshine.crypto.binance.helper.handler.command.impl.MainMenuHandler;
 import com.flameshine.crypto.binance.helper.handler.command.impl.StartHandler;
 import com.flameshine.crypto.binance.helper.handler.message.MessageHandler;
-import com.flameshine.crypto.binance.helper.handler.message.impl.ApiKeyHandler;
+import com.flameshine.crypto.binance.helper.handler.message.impl.ApiKeyNameHandler;
+import com.flameshine.crypto.binance.helper.handler.message.impl.ApiKeyValueHandler;
 import com.flameshine.crypto.binance.helper.model.HandlerResponse;
 import com.flameshine.crypto.binance.helper.orchestrator.MenuOrchestrator;
 
@@ -33,7 +33,8 @@ public class BinanceFlexibleEarnStopLimitsHelperBot extends TelegramLongPollingB
     private final MenuOrchestrator menuOrchestrator;
     private final CommandHandler startHandler;
     private final CommandHandler mainMenuHandler;
-    private final MessageHandler apiKeyHandler;
+    private final MessageHandler apiKeyValueHandler;
+    private final MessageHandler apiKeyNameHandler;
     private final String username;
 
     @Inject
@@ -42,7 +43,8 @@ public class BinanceFlexibleEarnStopLimitsHelperBot extends TelegramLongPollingB
         this.menuOrchestrator = new MenuOrchestrator();
         this.startHandler = new StartHandler();
         this.mainMenuHandler = new MainMenuHandler();
-        this.apiKeyHandler = new ApiKeyHandler();
+        this.apiKeyValueHandler = new ApiKeyValueHandler();
+        this.apiKeyNameHandler = new ApiKeyNameHandler();
         this.username = config.username();
         registerCommands();
     }
@@ -50,23 +52,21 @@ public class BinanceFlexibleEarnStopLimitsHelperBot extends TelegramLongPollingB
     @Override
     public void onUpdateReceived(Update update) {
 
-        var message = update.getMessage();
-        var chatId = message.getChatId();
-        var state = USER_STATE.getOrDefault(chatId, UserState.OPERATIONAL);
+        // TODO: reduce branching
 
-        HandlerResponse response = null;
-
-        switch (state) {
-            case OPERATIONAL -> response = handleOperationalState(update);
-            case WAITING_FOR_API_KEY -> response = apiKeyHandler.handle(message);
-            case WAITING_FOR_API_KEY_NAME -> throw new UnsupportedOperationException();
+        if (!update.hasMessage()) {
+            var response = handleUpdate(update);
+            response.methods().forEach(this::executeMethod);
+            return;
         }
 
-        Preconditions.checkState(response != null, "Handler response cannot be null");
-
-        response.methods().forEach(this::executeMethod);
+        var chatId = update.getMessage().getChatId();
+        var state = USER_STATE.getOrDefault(chatId, UserState.STATELESS);
+        var response = handleUpdateBasedOnState(update, state);
 
         USER_STATE.put(chatId, response.userState());
+
+        response.methods().forEach(this::executeMethod);
     }
 
     @Override
@@ -74,7 +74,7 @@ public class BinanceFlexibleEarnStopLimitsHelperBot extends TelegramLongPollingB
         return username;
     }
 
-    private HandlerResponse handleOperationalState(Update update) {
+    private HandlerResponse handleUpdate(Update update) {
 
         if (update.hasCallbackQuery()) {
             return menuOrchestrator.orchestrate(update.getCallbackQuery());
@@ -90,11 +90,18 @@ public class BinanceFlexibleEarnStopLimitsHelperBot extends TelegramLongPollingB
 
         if (Command.START.equals(command)) {
             return startHandler.handle(update);
-        } else if (Command.MENU.equals(command)) {
-            return mainMenuHandler.handle(update);
         }
 
-        throw new IllegalStateException("Unknown command");
+        return mainMenuHandler.handle(update);
+    }
+
+    private HandlerResponse handleUpdateBasedOnState(Update update, UserState state) {
+        var message = update.getMessage();
+        return switch (state) {
+            case STATELESS -> handleUpdate(update);
+            case WAITING_FOR_API_KEY -> apiKeyValueHandler.handle(message);
+            case WAITING_FOR_API_KEY_NAME -> apiKeyNameHandler.handle(message);
+        };
     }
 
     private void registerCommands() {

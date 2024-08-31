@@ -12,7 +12,7 @@ import com.flameshine.crypto.binance.helper.util.Messages;
 
 // TODO: validate API key if possible
 
-public class ApiKeyHandler implements MessageHandler {
+public class ApiKeyValueHandler implements MessageHandler {
 
     @Override
     public HandlerResponse handle(Message message) {
@@ -22,7 +22,7 @@ public class ApiKeyHandler implements MessageHandler {
             .text(Messages.API_KEY_NAME)
             .build();
 
-        System.out.println("API key name: " + message.getText());
+        System.out.println("API key value: " + message.getText());
 
         // TODO: handle API key name
         // TODO: save an API key

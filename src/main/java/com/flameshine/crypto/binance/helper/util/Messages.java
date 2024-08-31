@@ -7,7 +7,7 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class Messages {
 
-    public static final String API_KEY_SETUP = "Please paste the API key you just created: ";
+    public static final String API_KEY_VALUE = "Please paste the API key you just created: ";
     public static final String API_KEY_NAME = "Name your new API key: ";
     public static final String API_KEY_SETUP_SUCCESS = "You have successfully configured your first API key!";
     public static final String MAIN_MENU = "Please use the menu below to navigate the bot's functionality.";

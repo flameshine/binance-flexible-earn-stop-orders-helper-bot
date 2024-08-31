@@ -11,6 +11,6 @@ public record HandlerResponse(
     UserState userState
 ) {
     public HandlerResponse(List<? extends BotApiMethod<?>> methods) {
-        this(methods, UserState.OPERATIONAL);
+        this(methods, UserState.STATELESS);
     }
 }
