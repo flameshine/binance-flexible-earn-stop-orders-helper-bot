@@ -5,7 +5,6 @@ import java.util.List;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Named;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
-import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
@@ -14,6 +13,7 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import com.flameshine.crypto.binance.helper.enums.AccountMenuButton;
 import com.flameshine.crypto.binance.helper.enums.Keyboard;
 import com.flameshine.crypto.binance.helper.handler.button.ButtonHandler;
+import com.flameshine.crypto.binance.helper.model.HandlerResponse;
 import com.flameshine.crypto.binance.helper.util.Messages;
 
 @ApplicationScoped
@@ -23,7 +23,7 @@ public class AccountMenuButtonHandler implements ButtonHandler {
     public AccountMenuButtonHandler() {}
 
     @Override
-    public List<BotApiMethod<?>> handle(CallbackQuery query) {
+    public HandlerResponse handle(CallbackQuery query) {
 
         var message = query.getMessage();
         var chatId = message.getChatId();
@@ -47,21 +47,36 @@ public class AccountMenuButtonHandler implements ButtonHandler {
         switch (buttonData) {
 
             case CONNECT -> {
-                var sendMessage = sendMessageBuilder.text(Messages.CONNECT)
+
+                var sendMessage = sendMessageBuilder
+                    .text(Messages.CONNECT)
                     .build();
-                return List.of(sendMessage);
+
+                return new HandlerResponse(
+                    List.of(sendMessage)
+                );
             }
 
             case MY_ACCOUNTS -> {
-                var sendMessage = sendMessageBuilder.text(Messages.MY_ACCOUNTS)
+
+                var sendMessage = sendMessageBuilder
+                    .text(Messages.MY_ACCOUNTS)
                     .build();
-                return List.of(sendMessage);
+
+                return new HandlerResponse(
+                    List.of(sendMessage)
+                );
             }
 
             case DISCONNECT -> {
-                var sendMessage = sendMessageBuilder.text(Messages.DISCONNECT)
+
+                var sendMessage = sendMessageBuilder
+                    .text(Messages.DISCONNECT)
                     .build();
-                return List.of(sendMessage);
+
+                return new HandlerResponse(
+                    List.of(sendMessage)
+                );
             }
 
             case BACK -> {
@@ -74,6 +89,8 @@ public class AccountMenuButtonHandler implements ButtonHandler {
             .callbackQueryId(query.getId())
             .build();
 
-        return List.of(answer, newText, newMarkup);
+        return new HandlerResponse(
+            List.of(answer, newText, newMarkup)
+        );
     }
 }

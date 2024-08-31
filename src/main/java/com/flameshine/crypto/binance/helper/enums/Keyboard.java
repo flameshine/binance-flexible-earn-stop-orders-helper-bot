@@ -21,7 +21,7 @@ public enum Keyboard {
         this.markup = markup;
     }
 
-    public static Keyboard fromButtonCallback(String callback) {
+    public static Keyboard fromButtonData(String data) {
 
         for (var value : values()) {
 
@@ -30,11 +30,11 @@ public enum Keyboard {
                 .map(InlineKeyboardButton::getCallbackData)
                 .toList();
 
-            if (callbacks.contains(callback)) {
+            if (callbacks.contains(data)) {
                 return value;
             }
         }
 
-        throw new IllegalArgumentException("Unknown button callback: " + callback);
+        throw new IllegalArgumentException("Invalid button data: " + data);
     }
 }

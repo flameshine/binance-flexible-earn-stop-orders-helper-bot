@@ -7,7 +7,9 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class Messages {
 
-    public static final String INITIAL = "I can help you configure stop-limit orders without withdrawing your assets from Binance Flexible Earn.";
+    public static final String API_KEY_SETUP = "Please paste the API key you just created: ";
+    public static final String API_KEY_NAME = "Name your new API key: ";
+    public static final String API_KEY_SETUP_SUCCESS = "You have successfully configured your first API key!";
     public static final String MAIN_MENU = "Please use the menu below to navigate the bot's functionality.";
     public static final String ACCOUNT_MENU = "In this section you can manage your Binance accounts connected.";
     public static final String ORDER_MENU = "In this section you can configure stop-limit orders for the selected Binance account.";
@@ -20,4 +22,21 @@ public class Messages {
         Please choose an account you want to disconnect.
         All stop-limits orders will be cancelled and all available assets will be moved to Binance Flexible Earn.
         """;
+
+    private static final String GREETING = """
+        Before you can to leverage the bot's functionality, you'll need to configure your first Binance API key:
+        
+        [How to create API keys on Binance](https://www.binance.com/en/support/faq/how-to-create-api-keys-on-binance-360002502072)
+        
+        Rest assured, your funds will remain safe, as the API keys allow to read-only operations exclusively.
+        """;
+
+    public static String greeting() {
+        return escapeMarkdown(GREETING);
+    }
+
+    private static String escapeMarkdown(String input) {
+        return input.replaceAll("\\.", "\\\\.")
+            .replaceAll("-", "\\\\-");
+    }
 }

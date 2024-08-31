@@ -1,8 +1,10 @@
 package com.flameshine.crypto.binance.helper.bot;
 
 import java.util.Arrays;
-import java.util.stream.Stream;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
+import com.google.common.base.Preconditions;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -14,27 +16,33 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import com.flameshine.crypto.binance.helper.config.BotConfig;
 import com.flameshine.crypto.binance.helper.enums.Command;
+import com.flameshine.crypto.binance.helper.enums.UserState;
 import com.flameshine.crypto.binance.helper.handler.command.CommandHandler;
 import com.flameshine.crypto.binance.helper.handler.command.impl.MainMenuHandler;
 import com.flameshine.crypto.binance.helper.handler.command.impl.StartHandler;
+import com.flameshine.crypto.binance.helper.handler.message.MessageHandler;
+import com.flameshine.crypto.binance.helper.handler.message.impl.ApiKeyHandler;
+import com.flameshine.crypto.binance.helper.model.HandlerResponse;
 import com.flameshine.crypto.binance.helper.orchestrator.MenuOrchestrator;
-
-// TODO: add Binance account set up before the menu
 
 @ApplicationScoped
 public class BinanceFlexibleEarnStopLimitsHelperBot extends TelegramLongPollingBot {
 
+    private static final Map<Long, UserState> USER_STATE = new ConcurrentHashMap<>();
+
+    private final MenuOrchestrator menuOrchestrator;
     private final CommandHandler startHandler;
     private final CommandHandler mainMenuHandler;
-    private final MenuOrchestrator menuOrchestrator;
+    private final MessageHandler apiKeyHandler;
     private final String username;
 
     @Inject
     public BinanceFlexibleEarnStopLimitsHelperBot(BotConfig config) {
         super(config.token());
+        this.menuOrchestrator = new MenuOrchestrator();
         this.startHandler = new StartHandler();
         this.mainMenuHandler = new MainMenuHandler();
-        this.menuOrchestrator = new MenuOrchestrator();
+        this.apiKeyHandler = new ApiKeyHandler();
         this.username = config.username();
         registerCommands();
     }
@@ -42,31 +50,51 @@ public class BinanceFlexibleEarnStopLimitsHelperBot extends TelegramLongPollingB
     @Override
     public void onUpdateReceived(Update update) {
 
-        if (update.hasCallbackQuery()) {
-            var methods = menuOrchestrator.orchestrate(update.getCallbackQuery());
-            methods.forEach(this::executeMethod);
-            return;
+        var message = update.getMessage();
+        var chatId = message.getChatId();
+        var state = USER_STATE.getOrDefault(chatId, UserState.OPERATIONAL);
+
+        HandlerResponse response = null;
+
+        switch (state) {
+            case OPERATIONAL -> response = handleOperationalState(update);
+            case WAITING_FOR_API_KEY -> response = apiKeyHandler.handle(message);
+            case WAITING_FOR_API_KEY_NAME -> throw new UnsupportedOperationException();
         }
 
-        var command = Command.fromValue(update.getMessage().getText());
+        Preconditions.checkState(response != null, "Handler response cannot be null");
 
-        if (Command.START.equals(command)) {
+        response.methods().forEach(this::executeMethod);
 
-            var startMethods = startHandler.handle(update);
-            var mainMenuMethods = mainMenuHandler.handle(update);
-
-            Stream.concat(startMethods.stream(), mainMenuMethods.stream())
-                .forEach(this::executeMethod);
-
-        } else if (Command.MENU.equals(command)) {
-            var methods = mainMenuHandler.handle(update);
-            methods.forEach(this::executeMethod);
-        }
+        USER_STATE.put(chatId, response.userState());
     }
 
     @Override
     public String getBotUsername() {
         return username;
+    }
+
+    private HandlerResponse handleOperationalState(Update update) {
+
+        if (update.hasCallbackQuery()) {
+            return menuOrchestrator.orchestrate(update.getCallbackQuery());
+        }
+
+        var message = update.getMessage();
+
+        if (!message.isCommand()) {
+            return mainMenuHandler.handle(update);
+        }
+
+        var command = Command.fromValue(message.getText());
+
+        if (Command.START.equals(command)) {
+            return startHandler.handle(update);
+        } else if (Command.MENU.equals(command)) {
+            return mainMenuHandler.handle(update);
+        }
+
+        throw new IllegalStateException("Unknown command");
     }
 
     private void registerCommands() {

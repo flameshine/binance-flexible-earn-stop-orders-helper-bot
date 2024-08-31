@@ -5,7 +5,6 @@ import java.util.List;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Named;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
-import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
@@ -14,6 +13,7 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import com.flameshine.crypto.binance.helper.enums.Keyboard;
 import com.flameshine.crypto.binance.helper.enums.MainMenuButton;
 import com.flameshine.crypto.binance.helper.handler.button.ButtonHandler;
+import com.flameshine.crypto.binance.helper.model.HandlerResponse;
 import com.flameshine.crypto.binance.helper.util.Messages;
 
 // TODO: implement "Accounts" functionality
@@ -26,7 +26,7 @@ public class MainMenuButtonHandler implements ButtonHandler {
     public MainMenuButtonHandler() {}
 
     @Override
-    public List<BotApiMethod<?>> handle(CallbackQuery query) {
+    public HandlerResponse handle(CallbackQuery query) {
 
         var message = query.getMessage();
         var chatId = message.getChatId();
@@ -60,15 +60,25 @@ public class MainMenuButtonHandler implements ButtonHandler {
             }
 
             case HELP -> {
-                var sendMessage = sendMessageBuilder.text(Messages.HELP)
+
+                var sendMessage = sendMessageBuilder
+                    .text(Messages.HELP)
                     .build();
-                return List.of(sendMessage);
+
+                return new HandlerResponse(
+                    List.of(sendMessage)
+                );
             }
 
             case SUPPORT -> {
-                var sendMessage = sendMessageBuilder.text(Messages.SUPPORT)
+
+                var sendMessage = sendMessageBuilder
+                    .text(Messages.SUPPORT)
                     .build();
-                return List.of(sendMessage);
+
+                return new HandlerResponse(
+                    List.of(sendMessage)
+                );
             }
         }
 
@@ -76,6 +86,8 @@ public class MainMenuButtonHandler implements ButtonHandler {
             .callbackQueryId(query.getId())
             .build();
 
-        return List.of(answer, newText, newMarkup);
+        return new HandlerResponse(
+            List.of(answer, newText, newMarkup)
+        );
     }
 }

@@ -9,6 +9,7 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 import com.flameshine.crypto.binance.helper.bot.BinanceFlexibleEarnStopLimitsHelperBot;
 
 // TODO: set up logging
+// TODO: implement liveness/readiness probes
 // TODO: review language options
 // TODO: add proper README
 
