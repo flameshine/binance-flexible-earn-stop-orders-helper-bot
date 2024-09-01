@@ -11,7 +11,6 @@ import com.flameshine.crypto.binance.helper.bot.BinanceFlexibleEarnStopLimitsHel
 
 // TODO: set up logging
 // TODO: implement liveness/readiness probes
-// TODO: review language options
 // TODO: add proper README
 
 @QuarkusMain

@@ -23,6 +23,8 @@ import com.flameshine.crypto.binance.helper.handler.message.MessageHandler;
 import com.flameshine.crypto.binance.helper.model.HandlerResponse;
 import com.flameshine.crypto.binance.helper.orchestrator.MenuOrchestrator;
 
+// TODO: review language options
+
 @ApplicationScoped
 public class BinanceFlexibleEarnStopLimitsHelperBot extends TelegramLongPollingBot {
 

@@ -36,7 +36,7 @@ public class Messages {
         
         Example:
         
-        My first API key - ECL38H484Su5KdxxV4HYW9CeSpy
+        My key - ECN38H48Su5TdxxV4YO9CeXy
         """;
 
     public static String greeting() {
