@@ -29,7 +29,7 @@ public class StartHandler implements CommandHandler {
         // TODO: check if user already has one and handle it
 
         var apiKeySetupMessage = sendMessageBuilder
-            .text(Messages.API_KEY_VALUE)
+            .text(Messages.apiKeySetup())
             .build();
 
         var methods = List.of(greetingMessage, apiKeySetupMessage);

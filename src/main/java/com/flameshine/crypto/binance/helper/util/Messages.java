@@ -7,8 +7,6 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class Messages {
 
-    public static final String API_KEY_VALUE = "Please paste the API key you just created: ";
-    public static final String API_KEY_NAME = "Name your new API key: ";
     public static final String API_KEY_SETUP_SUCCESS = "You have successfully configured your first API key!";
     public static final String MAIN_MENU = "Please use the menu below to navigate the bot's functionality.";
     public static final String ACCOUNT_MENU = "In this section you can manage your Binance accounts connected.";
@@ -31,12 +29,30 @@ public class Messages {
         Rest assured, your funds will remain safe, as the API keys allow to read-only operations exclusively.
         """;
 
+    private static final String API_KEY_SETUP = """
+        Please send me the API key you just created using the following format:
+        
+        <name> - <value>
+        
+        Example:
+        
+        My first API key - ECL38H484Su5KdxxV4HYW9CeSpy
+        """;
+
     public static String greeting() {
         return escapeMarkdown(GREETING);
     }
 
+    public static String apiKeySetup() {
+        return escapeMarkdown(API_KEY_SETUP);
+    }
+
+    // TODO: consider replacing with regex
+
     private static String escapeMarkdown(String input) {
         return input.replaceAll("\\.", "\\\\.")
-            .replaceAll("-", "\\\\-");
+            .replaceAll("-", "\\\\-")
+            .replaceAll("<", "\\\\<")
+            .replaceAll(">", "\\\\>");
     }
 }

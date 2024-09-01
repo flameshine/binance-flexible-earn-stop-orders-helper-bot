@@ -20,8 +20,6 @@ import com.flameshine.crypto.binance.helper.handler.command.CommandHandler;
 import com.flameshine.crypto.binance.helper.handler.command.impl.MainMenuHandler;
 import com.flameshine.crypto.binance.helper.handler.command.impl.StartHandler;
 import com.flameshine.crypto.binance.helper.handler.message.MessageHandler;
-import com.flameshine.crypto.binance.helper.handler.message.impl.ApiKeyNameHandler;
-import com.flameshine.crypto.binance.helper.handler.message.impl.ApiKeyValueHandler;
 import com.flameshine.crypto.binance.helper.model.HandlerResponse;
 import com.flameshine.crypto.binance.helper.orchestrator.MenuOrchestrator;
 
@@ -33,18 +31,16 @@ public class BinanceFlexibleEarnStopLimitsHelperBot extends TelegramLongPollingB
     private final MenuOrchestrator menuOrchestrator;
     private final CommandHandler startHandler;
     private final CommandHandler mainMenuHandler;
-    private final MessageHandler apiKeyValueHandler;
-    private final MessageHandler apiKeyNameHandler;
+    private final MessageHandler apiKeyHandler;
     private final String username;
 
     @Inject
-    public BinanceFlexibleEarnStopLimitsHelperBot(BotConfig config) {
+    public BinanceFlexibleEarnStopLimitsHelperBot(MessageHandler apiKeyHandler, BotConfig config) {
         super(config.token());
         this.menuOrchestrator = new MenuOrchestrator();
         this.startHandler = new StartHandler();
         this.mainMenuHandler = new MainMenuHandler();
-        this.apiKeyValueHandler = new ApiKeyValueHandler();
-        this.apiKeyNameHandler = new ApiKeyNameHandler();
+        this.apiKeyHandler = apiKeyHandler;
         this.username = config.username();
         registerCommands();
     }
@@ -52,7 +48,7 @@ public class BinanceFlexibleEarnStopLimitsHelperBot extends TelegramLongPollingB
     @Override
     public void onUpdateReceived(Update update) {
 
-        // TODO: reduce branching
+        // TODO: consider reducing branching
 
         if (!update.hasMessage()) {
             var response = handleUpdate(update);
@@ -99,8 +95,7 @@ public class BinanceFlexibleEarnStopLimitsHelperBot extends TelegramLongPollingB
         var message = update.getMessage();
         return switch (state) {
             case STATELESS -> handleUpdate(update);
-            case WAITING_FOR_API_KEY -> apiKeyValueHandler.handle(message);
-            case WAITING_FOR_API_KEY_NAME -> apiKeyNameHandler.handle(message);
+            case WAITING_FOR_API_KEY -> apiKeyHandler.handle(message);
         };
     }
 

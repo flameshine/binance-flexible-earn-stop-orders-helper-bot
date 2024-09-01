@@ -1,7 +1,9 @@
 val quarkusPlatformGroupId: String by project
 val quarkusPlatformArtifactId: String by project
 val quarkusPlatformVersion: String by project
-val lombokVersion = "1.18.34"
+val telegramBotApiVersion: String by project
+val lombokVersion: String by project
+val jaxbApiVersion: String by project
 
 plugins {
     java
@@ -24,11 +26,15 @@ repositories {
 dependencies {
     implementation(enforcedPlatform("$quarkusPlatformGroupId:$quarkusPlatformArtifactId:$quarkusPlatformVersion"))
     implementation("io.quarkus:quarkus-arc")
-    implementation("io.quarkus:quarkus-hibernate-orm")
+    implementation("io.quarkus:quarkus-hibernate-orm-panache")
     implementation("io.quarkus:quarkus-jdbc-mysql")
-    implementation("org.telegram:telegrambots:6.9.7.1")
-//    implementation("com.google.guava:guava:33.3.0-jre")
+    implementation("org.telegram:telegrambots:$telegramBotApiVersion")
     compileOnly("org.projectlombok:lombok:$lombokVersion")
     annotationProcessor("org.projectlombok:lombok:$lombokVersion")
-    runtimeOnly("javax.xml.bind:jaxb-api:2.3.1") // required by Quarkus
+    runtimeOnly("javax.xml.bind:jaxb-api:$jaxbApiVersion") // required by Quarkus
+}
+
+tasks.withType<JavaCompile> {
+    options.encoding = "UTF-8"
+    options.compilerArgs.add("-parameters")
 }
