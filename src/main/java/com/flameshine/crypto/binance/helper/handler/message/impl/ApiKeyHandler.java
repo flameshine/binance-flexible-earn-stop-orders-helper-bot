@@ -9,11 +9,10 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 import com.flameshine.crypto.binance.helper.entity.Account;
+import com.flameshine.crypto.binance.helper.enums.UserState;
 import com.flameshine.crypto.binance.helper.handler.message.MessageHandler;
 import com.flameshine.crypto.binance.helper.model.HandlerResponse;
 import com.flameshine.crypto.binance.helper.util.Messages;
-
-// TODO: validate API key if possible
 
 @ApplicationScoped
 public class ApiKeyHandler implements MessageHandler {
@@ -24,24 +23,32 @@ public class ApiKeyHandler implements MessageHandler {
     @Transactional
     public HandlerResponse handle(Message message) {
 
+        var sendMessageBuilder = SendMessage.builder()
+            .chatId(message.getChatId());
+
         var matcher = API_KEY_PATTERN.matcher(message.getText());
 
-        if (matcher.matches()) {
+        if (!matcher.matches()) {
 
-            var account = Account.builder()
-                .telegramUserId(message.getFrom().getId())
-                .name(matcher.group(1))
-                .binanceApiKey(matcher.group(2))
+            var sendMessage = sendMessageBuilder
+                .text(Messages.API_KEY_SETUP_FAILURE)
                 .build();
 
-            account.persist();
-
-        } else {
-            // TODO: handle
+            return new HandlerResponse(
+                List.of(sendMessage),
+                UserState.WAITING_FOR_API_KEY
+            );
         }
 
-        var sendMessage = SendMessage.builder()
-            .chatId(message.getChatId())
+        var account = Account.builder()
+            .telegramUserId(message.getFrom().getId())
+            .name(matcher.group(1))
+            .binanceApiKey(matcher.group(2))
+            .build();
+
+        account.persist();
+
+        var sendMessage = sendMessageBuilder
             .text(Messages.API_KEY_SETUP_SUCCESS)
             .build();
 

@@ -8,6 +8,7 @@ import lombok.experimental.UtilityClass;
 public class Messages {
 
     public static final String API_KEY_SETUP_SUCCESS = "You have successfully configured your first API key!";
+    public static final String API_KEY_SETUP_FAILURE = "Sorry, your message format seems incorrect. Please try again: ";
     public static final String MAIN_MENU = "Please use the menu below to navigate the bot's functionality.";
     public static final String ACCOUNT_MENU = "In this section you can manage your Binance accounts connected.";
     public static final String ORDER_MENU = "In this section you can configure stop-limit orders for the selected Binance account.";
