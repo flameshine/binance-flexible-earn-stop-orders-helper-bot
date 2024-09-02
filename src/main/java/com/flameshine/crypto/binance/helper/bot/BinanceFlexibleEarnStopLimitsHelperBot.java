@@ -17,6 +17,7 @@ import com.flameshine.crypto.binance.helper.config.BotConfig;
 import com.flameshine.crypto.binance.helper.enums.Command;
 import com.flameshine.crypto.binance.helper.enums.UserState;
 import com.flameshine.crypto.binance.helper.handler.command.CommandHandler;
+import com.flameshine.crypto.binance.helper.handler.command.impl.HelpHandler;
 import com.flameshine.crypto.binance.helper.handler.command.impl.MainMenuHandler;
 import com.flameshine.crypto.binance.helper.handler.command.impl.StartHandler;
 import com.flameshine.crypto.binance.helper.handler.message.MessageHandler;
@@ -33,6 +34,7 @@ public class BinanceFlexibleEarnStopLimitsHelperBot extends TelegramLongPollingB
     private final MenuOrchestrator menuOrchestrator;
     private final CommandHandler startHandler;
     private final CommandHandler mainMenuHandler;
+    private final CommandHandler helpHandler;
     private final MessageHandler apiKeyHandler;
     private final String username;
 
@@ -42,6 +44,7 @@ public class BinanceFlexibleEarnStopLimitsHelperBot extends TelegramLongPollingB
         this.menuOrchestrator = new MenuOrchestrator();
         this.startHandler = new StartHandler();
         this.mainMenuHandler = new MainMenuHandler();
+        this.helpHandler = new HelpHandler();
         this.apiKeyHandler = apiKeyHandler;
         this.username = config.username();
         registerCommands();
@@ -86,11 +89,11 @@ public class BinanceFlexibleEarnStopLimitsHelperBot extends TelegramLongPollingB
 
         var command = Command.fromValue(message.getText());
 
-        if (Command.START.equals(command)) {
-            return startHandler.handle(update);
-        }
-
-        return mainMenuHandler.handle(update);
+        return switch (command) {
+            case START -> startHandler.handle(update);
+            case MENU -> mainMenuHandler.handle(update);
+            case HELP -> helpHandler.handle(update);
+        };
     }
 
     private HandlerResponse handleUpdateBasedOnState(Update update, UserState state) {

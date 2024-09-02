@@ -42,9 +42,6 @@ public class MainMenuButtonHandler implements ButtonHandler {
             .messageId(message.getMessageId())
             .build();
 
-        var sendMessageBuilder = SendMessage.builder()
-            .chatId(chatId);
-
         var buttonData = MainMenuButton.fromValue(query.getData());
 
         switch (buttonData) {
@@ -59,20 +56,10 @@ public class MainMenuButtonHandler implements ButtonHandler {
                 newMarkup.setReplyMarkup(Keyboard.ORDER_MENU.getMarkup());
             }
 
-            case HELP -> {
-
-                var sendMessage = sendMessageBuilder
-                    .text(Messages.HELP)
-                    .build();
-
-                return new HandlerResponse(
-                    List.of(sendMessage)
-                );
-            }
-
             case SUPPORT -> {
 
-                var sendMessage = sendMessageBuilder
+                var sendMessage = SendMessage.builder()
+                    .chatId(chatId)
                     .text(Messages.SUPPORT)
                     .build();
 

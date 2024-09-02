@@ -6,7 +6,8 @@ import lombok.Getter;
 public enum Command {
 
     START("Start the bot"),
-    MENU("Main menu");
+    MENU("Main menu"),
+    HELP("Help");
 
     private final String description;
 

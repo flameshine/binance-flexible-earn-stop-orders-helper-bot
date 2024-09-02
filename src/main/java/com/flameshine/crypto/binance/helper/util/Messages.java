@@ -12,14 +12,29 @@ public class Messages {
     public static final String MAIN_MENU = "Please use the menu below to navigate the bot's functionality.";
     public static final String ACCOUNT_MENU = "In this section you can manage your Binance accounts connected.";
     public static final String ORDER_MENU = "In this section you can configure stop-limit orders for the selected Binance account.";
-    public static final String HELP = "Please contact @flameshiner if you have any questions/proposals.";
     public static final String SUPPORT = "Support details.";
     public static final String CONNECT = "Please send your Binance account details below: ";
     public static final String MY_ACCOUNTS = "Currently connected accounts: ";
 
+    public static final String HELP = """
+        I can help you configure stop-limit orders without withdrawing your assets from Binance Flexible Earn.
+        
+        You can interact with me using the following commands:
+        
+        /menu - Main menu
+        /help - Help
+        
+        Main menu contains the following sections:
+        
+        1. Accounts. Manage connected Binance accounts.
+        2. Orders. Handle stop-limit orders for the selected Binance account. You can view active orders, add new ones, or cancel them.
+        3. Support. Find payment details if you'd like to support the developer.
+        
+        For further assistance, please contact @flameshiner.
+        """;
+
     public static final String DISCONNECT = """
-        Please choose an account you want to disconnect.
-        All stop-limits orders will be cancelled and all available assets will be moved to Binance Flexible Earn.
+        Please choose an account you want to disconnect. Your stop-limits orders will be cancelled.
         """;
 
     private static final String GREETING = """
