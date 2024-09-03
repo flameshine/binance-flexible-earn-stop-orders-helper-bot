@@ -5,6 +5,7 @@ import java.util.List;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Named;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
+import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
@@ -12,6 +13,7 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 
 import com.flameshine.crypto.binance.helper.enums.AccountMenuButton;
 import com.flameshine.crypto.binance.helper.enums.Keyboard;
+import com.flameshine.crypto.binance.helper.enums.UserState;
 import com.flameshine.crypto.binance.helper.handler.button.ButtonHandler;
 import com.flameshine.crypto.binance.helper.model.HandlerResponse;
 import com.flameshine.crypto.binance.helper.util.Messages;
@@ -49,11 +51,13 @@ public class AccountMenuButtonHandler implements ButtonHandler {
             case CONNECT -> {
 
                 var sendMessage = sendMessageBuilder
-                    .text(Messages.CONNECT)
+                    .text(Messages.accountSetup())
+                    .parseMode(ParseMode.MARKDOWNV2)
                     .build();
 
                 return new HandlerResponse(
-                    List.of(sendMessage)
+                    List.of(sendMessage),
+                    UserState.WAITING_FOR_API_KEY
                 );
             }
 

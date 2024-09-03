@@ -53,19 +53,13 @@ public class BinanceFlexibleEarnStopLimitsHelperBot extends TelegramLongPollingB
     @Override
     public void onUpdateReceived(Update update) {
 
-        // TODO: consider reducing branching
+        HandlerResponse response;
 
-        if (!update.hasMessage()) {
-            var response = handleUpdate(update);
-            response.methods().forEach(this::executeMethod);
-            return;
+        if (isButtonTap(update)) {
+            response = handleButtonTap(update);
+        } else {
+            response = handleText(update);
         }
-
-        var chatId = update.getMessage().getChatId();
-        var state = USER_STATE.getOrDefault(chatId, UserState.STATELESS);
-        var response = handleUpdateBasedOnState(update, state);
-
-        USER_STATE.put(chatId, response.userState());
 
         response.methods().forEach(this::executeMethod);
     }
@@ -75,32 +69,35 @@ public class BinanceFlexibleEarnStopLimitsHelperBot extends TelegramLongPollingB
         return username;
     }
 
-    private HandlerResponse handleUpdate(Update update) {
+    private HandlerResponse handleButtonTap(Update update) {
+        var query = update.getCallbackQuery();
+        var response = menuOrchestrator.orchestrate(query);
+        USER_STATE.put(query.getFrom().getId(), response.userState());
+        return response;
+    }
 
-        if (update.hasCallbackQuery()) {
-            return menuOrchestrator.orchestrate(update.getCallbackQuery());
-        }
+    private HandlerResponse handleText(Update update) {
 
         var message = update.getMessage();
+        var chatId = message.getChatId();
+        var state = USER_STATE.getOrDefault(chatId, UserState.STATELESS);
 
-        if (!message.isCommand()) {
-            return mainMenuHandler.handle(update);
-        }
+        var response = switch (state) {
+            case STATELESS -> handleCommand(update);
+            case WAITING_FOR_API_KEY -> apiKeyHandler.handle(message);
+        };
 
-        var command = Command.fromValue(message.getText());
+        USER_STATE.put(chatId, response.userState());
 
+        return response;
+    }
+
+    private HandlerResponse handleCommand(Update update) {
+        var command = Command.fromValue(update.getMessage().getText());
         return switch (command) {
             case START -> startHandler.handle(update);
             case MENU -> mainMenuHandler.handle(update);
             case HELP -> helpHandler.handle(update);
-        };
-    }
-
-    private HandlerResponse handleUpdateBasedOnState(Update update, UserState state) {
-        var message = update.getMessage();
-        return switch (state) {
-            case STATELESS -> handleUpdate(update);
-            case WAITING_FOR_API_KEY -> apiKeyHandler.handle(message);
         };
     }
 
@@ -123,5 +120,9 @@ public class BinanceFlexibleEarnStopLimitsHelperBot extends TelegramLongPollingB
         } catch (TelegramApiException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static boolean isButtonTap(Update update) {
+        return update.hasCallbackQuery() && !update.hasMessage();
     }
 }

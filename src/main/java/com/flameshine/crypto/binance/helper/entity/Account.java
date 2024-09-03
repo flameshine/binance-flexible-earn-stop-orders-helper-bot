@@ -22,7 +22,7 @@ import lombok.ToString;
 @ToString(callSuper = true)
 public class Account extends PanacheEntity {
 
-    @Column(name = "telegram_user_id", unique = true, nullable = false)
+    @Column(name = "telegram_user_id", nullable = false)
     private Long telegramUserId;
 
     @Column(name = "name", unique = true, nullable = false)
