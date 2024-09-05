@@ -13,7 +13,7 @@ public class Messages {
     public static final String ACCOUNT_MENU = "In this section you can manage your Binance accounts connected.";
     public static final String ORDER_MENU = "In this section you can configure stop-limit orders for the selected Binance account.";
     public static final String SUPPORT = "Support details.";
-    public static final String MY_ACCOUNTS = "Currently connected accounts: ";
+    public static final String ACCOUNT_LIST = "Currently connected accounts: ";
 
     public static final String HELP = """
         I can help you configure stop-limit orders without withdrawing your assets from Binance Flexible Earn.
@@ -52,6 +52,11 @@ public class Messages {
         Example:
         
         My key - ECN38H48Su5TdxxV4YO9CeXy
+        """;
+
+    public static final String EMPTY_ACCOUNT_LIST = """
+        You haven't connected any accounts yet.
+        To learn how, use the /start command.
         """;
 
     public static String greeting() {

@@ -15,7 +15,7 @@ import com.flameshine.crypto.binance.helper.model.HandlerResponse;
 import com.flameshine.crypto.binance.helper.util.Messages;
 
 @ApplicationScoped
-public class ApiKeyHandler implements MessageHandler {
+public class ApiKeyMessageHandler implements MessageHandler {
 
     private static final Pattern API_KEY_PATTERN = Pattern.compile("(\\S+)\\s*-\\s*(\\S+)");
 

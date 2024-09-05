@@ -1,8 +1,10 @@
 package com.flameshine.crypto.binance.helper.entity;
 
+import java.util.List;
 import java.util.Set;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
@@ -10,14 +12,17 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Entity
 @Table(name = "account")
+@RegisterForReflection
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class Account extends PanacheEntity {
@@ -35,4 +40,8 @@ public class Account extends PanacheEntity {
 
     @OneToMany(mappedBy = "account")
     private Set<StopOrder> orders;
+
+    public static List<Account> findAllByTelegramUserId(Long telegramUserId) {
+        return find("telegramUserId", telegramUserId).list();
+    }
 }

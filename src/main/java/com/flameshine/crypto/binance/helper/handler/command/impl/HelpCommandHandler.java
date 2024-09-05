@@ -9,9 +9,9 @@ import com.flameshine.crypto.binance.helper.handler.command.CommandHandler;
 import com.flameshine.crypto.binance.helper.model.HandlerResponse;
 import com.flameshine.crypto.binance.helper.util.Messages;
 
-public class HelpHandler implements CommandHandler {
+public class HelpCommandHandler implements CommandHandler {
 
-    public HelpHandler() {}
+    public HelpCommandHandler() {}
 
     @Override
     public HandlerResponse handle(Update update) {

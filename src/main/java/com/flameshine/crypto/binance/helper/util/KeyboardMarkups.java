@@ -1,15 +1,23 @@
 package com.flameshine.crypto.binance.helper.util;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import lombok.experimental.UtilityClass;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
+import com.flameshine.crypto.binance.helper.entity.Account;
+
 // TODO: add emojis
 
 @UtilityClass
 public class KeyboardMarkups {
+
+    private static final InlineKeyboardButton BACK = InlineKeyboardButton.builder()
+        .text("Back")
+        .callbackData("back")
+        .build();
 
     public static InlineKeyboardMarkup mainMenu() {
 
@@ -55,13 +63,8 @@ public class KeyboardMarkups {
             .callbackData("disconnect")
             .build();
 
-        var back = InlineKeyboardButton.builder()
-            .text("Back")
-            .callbackData("back")
-            .build();
-
         return InlineKeyboardMarkup.builder()
-            .keyboardRow(List.of(connect, myAccounts, disconnect, back))
+            .keyboardRow(List.of(connect, myAccounts, disconnect, BACK))
             .build();
     }
 
@@ -82,13 +85,32 @@ public class KeyboardMarkups {
             .callbackData("cancel")
             .build();
 
-        var back = InlineKeyboardButton.builder()
-            .text("Back")
-            .callbackData("back")
+        return InlineKeyboardMarkup.builder()
+            .keyboardRow(List.of(newOrder, orders, cancel, BACK))
             .build();
+    }
+
+    public static InlineKeyboardMarkup accountListMenu(List<Account> accounts) {
+
+        var accountRows = accounts.stream()
+            .map(KeyboardMarkups::toKeyboardRow)
+            .toList();
+
+        var keyboard = Stream.concat(accountRows.stream(), Stream.of(List.of(BACK)))
+            .toList();
 
         return InlineKeyboardMarkup.builder()
-            .keyboardRow(List.of(newOrder, orders, cancel, back))
+            .keyboard(keyboard)
             .build();
+    }
+
+    private static List<InlineKeyboardButton> toKeyboardRow(Account account) {
+
+        var button =  InlineKeyboardButton.builder()
+            .text(account.getName())
+            .callbackData(account.getName())
+            .build();
+
+        return List.of(button);
     }
 }

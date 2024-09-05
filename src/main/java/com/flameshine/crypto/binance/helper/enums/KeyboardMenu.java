@@ -9,19 +9,19 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import com.flameshine.crypto.binance.helper.util.KeyboardMarkups;
 
 @Getter
-public enum Keyboard {
+public enum KeyboardMenu {
 
-    MAIN_MENU(KeyboardMarkups.mainMenu()),
-    ACCOUNT_MENU(KeyboardMarkups.accountMenu()),
-    ORDER_MENU(KeyboardMarkups.orderMenu());
+    MAIN(KeyboardMarkups.mainMenu()),
+    ACCOUNT(KeyboardMarkups.accountMenu()),
+    ORDER(KeyboardMarkups.orderMenu());
 
     private final InlineKeyboardMarkup markup;
 
-    Keyboard(InlineKeyboardMarkup markup) {
+    KeyboardMenu(InlineKeyboardMarkup markup) {
         this.markup = markup;
     }
 
-    public static Keyboard fromButtonData(String data) {
+    public static KeyboardMenu fromButtonData(String data) {
 
         for (var value : values()) {
 

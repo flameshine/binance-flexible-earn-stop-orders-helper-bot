@@ -11,9 +11,9 @@ import com.flameshine.crypto.binance.helper.handler.command.CommandHandler;
 import com.flameshine.crypto.binance.helper.model.HandlerResponse;
 import com.flameshine.crypto.binance.helper.util.Messages;
 
-public class StartHandler implements CommandHandler {
+public class StartCommandHandler implements CommandHandler {
 
-    public StartHandler() {}
+    public StartCommandHandler() {}
 
     @Override
     public HandlerResponse handle(Update update) {

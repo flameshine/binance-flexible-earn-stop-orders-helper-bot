@@ -3,69 +3,57 @@ package com.flameshine.crypto.binance.helper.handler.button.impl;
 import java.util.List;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Named;
+import jakarta.transaction.Transactional;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 
-import com.flameshine.crypto.binance.helper.enums.KeyboardMenu;
-import com.flameshine.crypto.binance.helper.enums.MainMenuButton;
+import com.flameshine.crypto.binance.helper.entity.Account;
 import com.flameshine.crypto.binance.helper.handler.button.ButtonHandler;
 import com.flameshine.crypto.binance.helper.model.HandlerResponse;
+import com.flameshine.crypto.binance.helper.util.KeyboardMarkups;
 import com.flameshine.crypto.binance.helper.util.Messages;
 
-// TODO: implement "Accounts" functionality
-// TODO: implement "Orders" functionality
+// TODO: finish
 
 @ApplicationScoped
-public class MainMenuButtonHandler implements ButtonHandler {
-
-    public MainMenuButtonHandler() {}
+@Named("accountListButtonHandler")
+public class AccountListButtonHandler implements ButtonHandler {
 
     @Override
+    @Transactional
     public HandlerResponse handle(CallbackQuery query) {
 
         var message = query.getMessage();
         var chatId = message.getChatId();
+        var accounts = Account.findAllByTelegramUserId(query.getFrom().getId());
+
+        if (accounts.isEmpty()) {
+
+            var sendMessage = SendMessage.builder()
+                .chatId(chatId)
+                .text(Messages.EMPTY_ACCOUNT_LIST)
+                .build();
+
+            return new HandlerResponse(
+                List.of(sendMessage)
+            );
+        }
 
         var text = EditMessageText.builder()
             .chatId(chatId)
             .messageId(message.getMessageId())
-            .text("")
+            .text(Messages.ACCOUNT_LIST)
             .build();
 
         var markup = EditMessageReplyMarkup.builder()
             .chatId(chatId)
             .messageId(message.getMessageId())
+            .replyMarkup(KeyboardMarkups.accountListMenu(accounts))
             .build();
-
-        var buttonData = MainMenuButton.fromValue(query.getData());
-
-        switch (buttonData) {
-
-            case ACCOUNTS -> {
-                text.setText(Messages.ACCOUNT_MENU);
-                markup.setReplyMarkup(KeyboardMenu.ACCOUNT.getMarkup());
-            }
-
-            case ORDERS -> {
-                text.setText(Messages.ORDER_MENU);
-                markup.setReplyMarkup(KeyboardMenu.ORDER.getMarkup());
-            }
-
-            case SUPPORT -> {
-
-                var sendMessage = SendMessage.builder()
-                    .chatId(chatId)
-                    .text(Messages.SUPPORT)
-                    .build();
-
-                return new HandlerResponse(
-                    List.of(sendMessage)
-                );
-            }
-        }
 
         var answer = AnswerCallbackQuery.builder()
             .callbackQueryId(query.getId())
