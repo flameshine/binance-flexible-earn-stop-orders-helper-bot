@@ -17,8 +17,6 @@ import com.flameshine.crypto.binance.helper.model.HandlerResponse;
 import com.flameshine.crypto.binance.helper.util.KeyboardMarkups;
 import com.flameshine.crypto.binance.helper.util.Messages;
 
-// TODO: finish
-
 @ApplicationScoped
 @Named("accountListButtonHandler")
 public class AccountListButtonHandler implements ButtonHandler {
@@ -52,7 +50,7 @@ public class AccountListButtonHandler implements ButtonHandler {
         var markup = EditMessageReplyMarkup.builder()
             .chatId(chatId)
             .messageId(message.getMessageId())
-            .replyMarkup(KeyboardMarkups.accountListMenu(accounts))
+            .replyMarkup(KeyboardMarkups.accountList(accounts))
             .build();
 
         var answer = AnswerCallbackQuery.builder()

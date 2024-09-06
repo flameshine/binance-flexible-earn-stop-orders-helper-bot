@@ -24,10 +24,12 @@ import com.flameshine.crypto.binance.helper.util.Messages;
 public class AccountMenuButtonHandler implements ButtonHandler {
 
     private final ButtonHandler accountListButtonHandler;
+    private final ButtonHandler accountDisconnectionButtonHandler;
 
     @Inject
     public AccountMenuButtonHandler(@Named("accountListButtonHandler") ButtonHandler accountListButtonHandler) {
         this.accountListButtonHandler = accountListButtonHandler;
+        this.accountDisconnectionButtonHandler = new AccountDisconnectionButtonHandler();
     }
 
     @Override
@@ -72,14 +74,7 @@ public class AccountMenuButtonHandler implements ButtonHandler {
             }
 
             case DISCONNECT -> {
-
-                var sendMessage = sendMessageBuilder
-                    .text(Messages.DISCONNECT)
-                    .build();
-
-                return new HandlerResponse(
-                    List.of(sendMessage)
-                );
+                return accountDisconnectionButtonHandler.handle(query);
             }
 
             case BACK -> {

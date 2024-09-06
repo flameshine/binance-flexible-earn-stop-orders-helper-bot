@@ -4,6 +4,7 @@ import java.util.List;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
+import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
@@ -58,7 +59,8 @@ public class MainMenuButtonHandler implements ButtonHandler {
 
                 var sendMessage = SendMessage.builder()
                     .chatId(chatId)
-                    .text(Messages.SUPPORT)
+                    .text(Messages.supportDetails())
+                    .parseMode(ParseMode.MARKDOWNV2)
                     .build();
 
                 return new HandlerResponse(

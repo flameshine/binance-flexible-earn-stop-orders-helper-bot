@@ -41,6 +41,10 @@ public class Account extends PanacheEntity {
     @OneToMany(mappedBy = "account")
     private Set<StopOrder> orders;
 
+    public static Account findByName(String name) {
+        return find("name", name).firstResult();
+    }
+
     public static List<Account> findAllByTelegramUserId(Long telegramUserId) {
         return find("telegramUserId", telegramUserId).list();
     }

@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
@@ -36,12 +37,14 @@ public class BinanceFlexibleEarnStopLimitsHelperBot extends TelegramLongPollingB
     private final CommandHandler mainMenuCommandHandler;
     private final CommandHandler helpCommandHandler;
     private final MessageHandler apiKeyMessageHandler;
+    private final MessageHandler accountDisconnectionMessageHandler;
     private final String username;
 
     @Inject
     public BinanceFlexibleEarnStopLimitsHelperBot(
         MenuOrchestrator menuOrchestrator,
-        MessageHandler apiKeyMessageHandler,
+        @Named("apiKeyMessageHandler") MessageHandler apiKeyMessageHandler,
+        @Named("accountDisconnectionMessageHandler") MessageHandler accountDisconnectionMessageHandler,
         BotConfig config
     ) {
         super(config.token());
@@ -50,6 +53,7 @@ public class BinanceFlexibleEarnStopLimitsHelperBot extends TelegramLongPollingB
         this.mainMenuCommandHandler = new MainMenuCommandHandler();
         this.helpCommandHandler = new HelpCommandHandler();
         this.apiKeyMessageHandler = apiKeyMessageHandler;
+        this.accountDisconnectionMessageHandler = accountDisconnectionMessageHandler;
         this.username = config.username();
         registerCommands();
     }
@@ -89,6 +93,7 @@ public class BinanceFlexibleEarnStopLimitsHelperBot extends TelegramLongPollingB
         var response = switch (state) {
             case STATELESS -> handleCommand(update);
             case WAITING_FOR_API_KEY -> apiKeyMessageHandler.handle(message);
+            case WAITING_FOR_ACCOUNT_TO_DISCONNECT -> accountDisconnectionMessageHandler.handle(message);
         };
 
         USER_STATE.put(chatId, response.userState());

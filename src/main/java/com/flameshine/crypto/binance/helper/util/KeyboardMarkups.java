@@ -1,7 +1,6 @@
 package com.flameshine.crypto.binance.helper.util;
 
 import java.util.List;
-import java.util.stream.Stream;
 
 import lombok.experimental.UtilityClass;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -90,13 +89,10 @@ public class KeyboardMarkups {
             .build();
     }
 
-    public static InlineKeyboardMarkup accountListMenu(List<Account> accounts) {
+    public static InlineKeyboardMarkup accountList(List<Account> accounts) {
 
-        var accountRows = accounts.stream()
+        var keyboard = accounts.stream()
             .map(KeyboardMarkups::toKeyboardRow)
-            .toList();
-
-        var keyboard = Stream.concat(accountRows.stream(), Stream.of(List.of(BACK)))
             .toList();
 
         return InlineKeyboardMarkup.builder()

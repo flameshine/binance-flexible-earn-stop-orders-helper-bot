@@ -1,7 +1,6 @@
 package com.flameshine.crypto.binance.helper.handler.message.impl;
 
 import java.util.List;
-import java.util.regex.Pattern;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Named;
@@ -16,10 +15,8 @@ import com.flameshine.crypto.binance.helper.model.HandlerResponse;
 import com.flameshine.crypto.binance.helper.util.Messages;
 
 @ApplicationScoped
-@Named("apiKeyMessageHandler")
-public class ApiKeyMessageHandler implements MessageHandler {
-
-    private static final Pattern API_KEY_PATTERN = Pattern.compile("(\\S+)\\s*-\\s*(\\S+)");
+@Named("accountDisconnectionMessageHandler")
+public class AccountDisconnectionMessageHandler implements MessageHandler {
 
     @Override
     @Transactional
@@ -28,30 +25,24 @@ public class ApiKeyMessageHandler implements MessageHandler {
         var sendMessageBuilder = SendMessage.builder()
             .chatId(message.getChatId());
 
-        var matcher = API_KEY_PATTERN.matcher(message.getText());
+        var account = Account.findByName(message.getText());
 
-        if (!matcher.matches()) {
+        if (account == null) {
 
             var sendMessage = sendMessageBuilder
-                .text(Messages.API_KEY_SETUP_FAILURE)
+                .text(Messages.UNKNOWN_ACCOUNT)
                 .build();
 
             return new HandlerResponse(
                 List.of(sendMessage),
-                UserState.WAITING_FOR_API_KEY
+                UserState.WAITING_FOR_ACCOUNT_TO_DISCONNECT
             );
         }
 
-        var account = Account.builder()
-            .telegramUserId(message.getFrom().getId())
-            .name(matcher.group(1))
-            .binanceApiKey(matcher.group(2))
-            .build();
-
-        account.persist();
+        Account.deleteById(account.id);
 
         var sendMessage = sendMessageBuilder
-            .text(Messages.API_KEY_SETUP_SUCCESS)
+            .text(Messages.ACCOUNT_DISCONNECTION_SUCCESS)
             .build();
 
         return new HandlerResponse(
