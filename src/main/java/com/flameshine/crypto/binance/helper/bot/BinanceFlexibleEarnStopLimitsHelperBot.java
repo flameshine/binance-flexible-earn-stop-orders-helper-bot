@@ -10,6 +10,8 @@ import jakarta.inject.Named;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -17,13 +19,10 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import com.flameshine.crypto.binance.helper.config.BotConfig;
 import com.flameshine.crypto.binance.helper.enums.Command;
 import com.flameshine.crypto.binance.helper.enums.UserState;
-import com.flameshine.crypto.binance.helper.handler.command.CommandHandler;
-import com.flameshine.crypto.binance.helper.handler.command.impl.HelpCommandHandler;
-import com.flameshine.crypto.binance.helper.handler.command.impl.MainMenuCommandHandler;
-import com.flameshine.crypto.binance.helper.handler.command.impl.StartCommandHandler;
 import com.flameshine.crypto.binance.helper.handler.message.MessageHandler;
-import com.flameshine.crypto.binance.helper.model.HandlerResponse;
-import com.flameshine.crypto.binance.helper.orchestrator.MenuOrchestrator;
+import com.flameshine.crypto.binance.helper.model.Response;
+import com.flameshine.crypto.binance.helper.orchestrator.Orchestrator;
+import com.flameshine.crypto.binance.helper.orchestrator.impl.CommandOrchestrator;
 
 // TODO: review language options
 
@@ -32,28 +31,24 @@ public class BinanceFlexibleEarnStopLimitsHelperBot extends TelegramLongPollingB
 
     private static final Map<Long, UserState> USER_STATE = new ConcurrentHashMap<>();
 
-    private final MenuOrchestrator menuOrchestrator;
-    private final CommandHandler startCommandHandler;
-    private final CommandHandler mainMenuCommandHandler;
-    private final CommandHandler helpCommandHandler;
+    private final Orchestrator<Message> commandOrchestrator;
+    private final Orchestrator<CallbackQuery> menuButtonOrchestrator;
     private final MessageHandler apiKeyMessageHandler;
-    private final MessageHandler accountDisconnectionMessageHandler;
+    private final MessageHandler accountDisconnectMessageHandler;
     private final String username;
 
     @Inject
     public BinanceFlexibleEarnStopLimitsHelperBot(
-        MenuOrchestrator menuOrchestrator,
+        Orchestrator<CallbackQuery> menuButtonOrchestrator,
         @Named("apiKeyMessageHandler") MessageHandler apiKeyMessageHandler,
-        @Named("accountDisconnectionMessageHandler") MessageHandler accountDisconnectionMessageHandler,
+        @Named("accountDisconnectMessageHandler") MessageHandler accountDisconnectMessageHandler,
         BotConfig config
     ) {
         super(config.token());
-        this.menuOrchestrator = menuOrchestrator;
-        this.startCommandHandler = new StartCommandHandler();
-        this.mainMenuCommandHandler = new MainMenuCommandHandler();
-        this.helpCommandHandler = new HelpCommandHandler();
+        this.commandOrchestrator = new CommandOrchestrator();
+        this.menuButtonOrchestrator = menuButtonOrchestrator;
         this.apiKeyMessageHandler = apiKeyMessageHandler;
-        this.accountDisconnectionMessageHandler = accountDisconnectionMessageHandler;
+        this.accountDisconnectMessageHandler = accountDisconnectMessageHandler;
         this.username = config.username();
         registerCommands();
     }
@@ -61,12 +56,12 @@ public class BinanceFlexibleEarnStopLimitsHelperBot extends TelegramLongPollingB
     @Override
     public void onUpdateReceived(Update update) {
 
-        HandlerResponse response;
+        Response response;
 
         if (isButtonTap(update)) {
-            response = handleButtonTap(update);
+            response = handleButtonTap(update.getCallbackQuery());
         } else {
-            response = handleText(update);
+            response = handleMessage(update.getMessage());
         }
 
         response.methods().forEach(this::executeMethod);
@@ -77,37 +72,27 @@ public class BinanceFlexibleEarnStopLimitsHelperBot extends TelegramLongPollingB
         return username;
     }
 
-    private HandlerResponse handleButtonTap(Update update) {
-        var query = update.getCallbackQuery();
-        var response = menuOrchestrator.orchestrate(query);
-        USER_STATE.put(query.getFrom().getId(), response.userState());
+    private Response handleButtonTap(CallbackQuery query) {
+        var response = menuButtonOrchestrator.orchestrate(query);
+        USER_STATE.put(query.getFrom().getId(), response.state());
         return response;
     }
 
-    private HandlerResponse handleText(Update update) {
+    private Response handleMessage(Message message) {
 
-        var message = update.getMessage();
         var chatId = message.getChatId();
         var state = USER_STATE.getOrDefault(chatId, UserState.STATELESS);
 
         var response = switch (state) {
-            case STATELESS -> handleCommand(update);
+            case STATELESS -> commandOrchestrator.orchestrate(message);
             case WAITING_FOR_API_KEY -> apiKeyMessageHandler.handle(message);
-            case WAITING_FOR_ACCOUNT_TO_DISCONNECT -> accountDisconnectionMessageHandler.handle(message);
+            case WAITING_FOR_ACCOUNT_TO_DISCONNECT -> accountDisconnectMessageHandler.handle(message);
+            case WAITING_FOR_TRADING_PAIR -> throw new UnsupportedOperationException();
         };
 
-        USER_STATE.put(chatId, response.userState());
+        USER_STATE.put(chatId, response.state());
 
         return response;
-    }
-
-    private HandlerResponse handleCommand(Update update) {
-        var command = Command.fromValue(update.getMessage().getText());
-        return switch (command) {
-            case START -> startCommandHandler.handle(update);
-            case MENU -> mainMenuCommandHandler.handle(update);
-            case HELP -> helpCommandHandler.handle(update);
-        };
     }
 
     private void registerCommands() {

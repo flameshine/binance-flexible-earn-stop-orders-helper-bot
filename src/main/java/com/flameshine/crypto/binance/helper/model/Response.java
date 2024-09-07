@@ -6,11 +6,11 @@ import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 
 import com.flameshine.crypto.binance.helper.enums.UserState;
 
-public record HandlerResponse(
+public record Response(
     List<? extends BotApiMethod<?>> methods,
-    UserState userState
+    UserState state
 ) {
-    public HandlerResponse(List<? extends BotApiMethod<?>> methods) {
+    public Response(List<? extends BotApiMethod<?>> methods) {
         this(methods, UserState.STATELESS);
     }
 }

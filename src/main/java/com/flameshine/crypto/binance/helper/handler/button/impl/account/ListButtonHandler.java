@@ -1,4 +1,4 @@
-package com.flameshine.crypto.binance.helper.handler.button.impl;
+package com.flameshine.crypto.binance.helper.handler.button.impl.account;
 
 import java.util.List;
 
@@ -13,17 +13,17 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 
 import com.flameshine.crypto.binance.helper.entity.Account;
 import com.flameshine.crypto.binance.helper.handler.button.ButtonHandler;
-import com.flameshine.crypto.binance.helper.model.HandlerResponse;
+import com.flameshine.crypto.binance.helper.model.Response;
 import com.flameshine.crypto.binance.helper.util.KeyboardMarkups;
 import com.flameshine.crypto.binance.helper.util.Messages;
 
 @ApplicationScoped
 @Named("accountListButtonHandler")
-public class AccountListButtonHandler implements ButtonHandler {
+public class ListButtonHandler implements ButtonHandler {
 
     @Override
     @Transactional
-    public HandlerResponse handle(CallbackQuery query) {
+    public Response handle(CallbackQuery query) {
 
         var message = query.getMessage();
         var chatId = message.getChatId();
@@ -36,7 +36,7 @@ public class AccountListButtonHandler implements ButtonHandler {
                 .text(Messages.EMPTY_ACCOUNT_LIST)
                 .build();
 
-            return new HandlerResponse(
+            return new Response(
                 List.of(sendMessage)
             );
         }
@@ -57,7 +57,7 @@ public class AccountListButtonHandler implements ButtonHandler {
             .callbackQueryId(query.getId())
             .build();
 
-        return new HandlerResponse(
+        return new Response(
             List.of(answer, text, markup)
         );
     }

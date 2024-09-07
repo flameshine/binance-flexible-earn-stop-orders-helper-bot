@@ -1,13 +1,13 @@
 package com.flameshine.crypto.binance.helper.enums;
 
-public enum AccountMenuButton {
+public enum OrderMenuButton {
 
-    USER_ACCOUNTS,
-    CONNECT,
-    DISCONNECT,
+    NEW,
+    USER_ORDERS,
+    CANCEL,
     BACK;
 
-    public static AccountMenuButton fromValue(String value) {
+    public static OrderMenuButton fromValue(String value) {
 
         for (var item : values()) {
             if (item.name().equalsIgnoreCase(value)) {

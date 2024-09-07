@@ -12,7 +12,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import com.flameshine.crypto.binance.helper.entity.Account;
 import com.flameshine.crypto.binance.helper.enums.UserState;
 import com.flameshine.crypto.binance.helper.handler.message.MessageHandler;
-import com.flameshine.crypto.binance.helper.model.HandlerResponse;
+import com.flameshine.crypto.binance.helper.model.Response;
 import com.flameshine.crypto.binance.helper.util.Messages;
 
 @ApplicationScoped
@@ -23,7 +23,7 @@ public class ApiKeyMessageHandler implements MessageHandler {
 
     @Override
     @Transactional
-    public HandlerResponse handle(Message message) {
+    public Response handle(Message message) {
 
         var sendMessageBuilder = SendMessage.builder()
             .chatId(message.getChatId());
@@ -36,7 +36,7 @@ public class ApiKeyMessageHandler implements MessageHandler {
                 .text(Messages.API_KEY_SETUP_FAILURE)
                 .build();
 
-            return new HandlerResponse(
+            return new Response(
                 List.of(sendMessage),
                 UserState.WAITING_FOR_API_KEY
             );
@@ -54,7 +54,7 @@ public class ApiKeyMessageHandler implements MessageHandler {
             .text(Messages.API_KEY_SETUP_SUCCESS)
             .build();
 
-        return new HandlerResponse(
+        return new Response(
             List.of(sendMessage)
         );
     }

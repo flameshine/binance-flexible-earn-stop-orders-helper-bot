@@ -27,8 +27,11 @@ public class StopOrder {
 
     // TODO: replace the field below with some Binance-provided enum if possible
 
-    @Column(name = "ticker", unique = true, nullable = false)
-    private String ticker;
+    @Column(name = "base", unique = true, nullable = false)
+    private String base;
+
+    @Column(name = "quote", unique = true, nullable = false)
+    private String quote;
 
     @ManyToOne
     @JoinColumn(name = "account_id", nullable = false)

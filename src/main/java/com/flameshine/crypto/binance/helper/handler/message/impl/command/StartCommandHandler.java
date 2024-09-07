@@ -1,25 +1,23 @@
-package com.flameshine.crypto.binance.helper.handler.command.impl;
+package com.flameshine.crypto.binance.helper.handler.message.impl.command;
 
 import java.util.List;
 
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.Message;
 
 import com.flameshine.crypto.binance.helper.enums.UserState;
-import com.flameshine.crypto.binance.helper.handler.command.CommandHandler;
-import com.flameshine.crypto.binance.helper.model.HandlerResponse;
+import com.flameshine.crypto.binance.helper.handler.message.MessageHandler;
+import com.flameshine.crypto.binance.helper.model.Response;
 import com.flameshine.crypto.binance.helper.util.Messages;
 
-public class StartCommandHandler implements CommandHandler {
-
-    public StartCommandHandler() {}
+public class StartCommandHandler implements MessageHandler {
 
     @Override
-    public HandlerResponse handle(Update update) {
+    public Response handle(Message message) {
 
         var sendMessageBuilder = SendMessage.builder()
-            .chatId(update.getMessage().getFrom().getId());
+            .chatId(message.getChatId());
 
         var greetingMessage = sendMessageBuilder
             .text(Messages.greeting())
@@ -32,8 +30,9 @@ public class StartCommandHandler implements CommandHandler {
             .text(Messages.accountSetup())
             .build();
 
-        var methods = List.of(greetingMessage, apiKeySetupMessage);
-
-        return new HandlerResponse(methods, UserState.WAITING_FOR_API_KEY);
+        return new Response(
+            List.of(greetingMessage, apiKeySetupMessage),
+            UserState.WAITING_FOR_API_KEY
+        );
     }
 }

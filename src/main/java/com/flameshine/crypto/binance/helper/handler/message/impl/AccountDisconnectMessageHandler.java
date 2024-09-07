@@ -11,16 +11,16 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import com.flameshine.crypto.binance.helper.entity.Account;
 import com.flameshine.crypto.binance.helper.enums.UserState;
 import com.flameshine.crypto.binance.helper.handler.message.MessageHandler;
-import com.flameshine.crypto.binance.helper.model.HandlerResponse;
+import com.flameshine.crypto.binance.helper.model.Response;
 import com.flameshine.crypto.binance.helper.util.Messages;
 
 @ApplicationScoped
-@Named("accountDisconnectionMessageHandler")
-public class AccountDisconnectionMessageHandler implements MessageHandler {
+@Named("accountDisconnectMessageHandler")
+public class AccountDisconnectMessageHandler implements MessageHandler {
 
     @Override
     @Transactional
-    public HandlerResponse handle(Message message) {
+    public Response handle(Message message) {
 
         var sendMessageBuilder = SendMessage.builder()
             .chatId(message.getChatId());
@@ -33,7 +33,7 @@ public class AccountDisconnectionMessageHandler implements MessageHandler {
                 .text(Messages.UNKNOWN_ACCOUNT)
                 .build();
 
-            return new HandlerResponse(
+            return new Response(
                 List.of(sendMessage),
                 UserState.WAITING_FOR_ACCOUNT_TO_DISCONNECT
             );
@@ -45,7 +45,7 @@ public class AccountDisconnectionMessageHandler implements MessageHandler {
             .text(Messages.ACCOUNT_DISCONNECTION_SUCCESS)
             .build();
 
-        return new HandlerResponse(
+        return new Response(
             List.of(sendMessage)
         );
     }

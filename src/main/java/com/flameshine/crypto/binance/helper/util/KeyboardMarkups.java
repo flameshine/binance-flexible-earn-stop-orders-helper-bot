@@ -47,14 +47,14 @@ public class KeyboardMarkups {
 
     public static InlineKeyboardMarkup accountMenu() {
 
+        var userAccounts = InlineKeyboardButton.builder()
+            .text("Your accounts")
+            .callbackData("user_accounts")
+            .build();
+
         var connect = InlineKeyboardButton.builder()
             .text("Connect")
             .callbackData("connect")
-            .build();
-
-        var myAccounts = InlineKeyboardButton.builder()
-            .text("My accounts")
-            .callbackData("my_accounts")
             .build();
 
         var disconnect = InlineKeyboardButton.builder()
@@ -63,7 +63,7 @@ public class KeyboardMarkups {
             .build();
 
         return InlineKeyboardMarkup.builder()
-            .keyboardRow(List.of(connect, myAccounts, disconnect, BACK))
+            .keyboardRow(List.of(userAccounts, connect, disconnect, BACK))
             .build();
     }
 
