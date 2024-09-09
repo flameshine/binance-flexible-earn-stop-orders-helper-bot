@@ -15,6 +15,6 @@ public enum MainMenuButton {
             }
         }
 
-        throw new IllegalArgumentException("Invalid menu button: " + value);
+        throw new IllegalArgumentException("Invalid main menu button: " + value);
     }
 }

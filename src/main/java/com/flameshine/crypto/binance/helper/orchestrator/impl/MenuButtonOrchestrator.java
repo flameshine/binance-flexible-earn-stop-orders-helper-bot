@@ -5,7 +5,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 
-import com.flameshine.crypto.binance.helper.enums.KeyboardMenu;
+import com.flameshine.crypto.binance.helper.enums.Keyboard;
 import com.flameshine.crypto.binance.helper.handler.button.ButtonHandler;
 import com.flameshine.crypto.binance.helper.handler.button.impl.main.MainMenuButtonHandler;
 import com.flameshine.crypto.binance.helper.handler.button.impl.order.OrderMenuButtonHandler;
@@ -30,7 +30,7 @@ public class MenuButtonOrchestrator implements Orchestrator<CallbackQuery> {
 
     @Override
     public Response orchestrate(CallbackQuery query) {
-        var keyboard = KeyboardMenu.fromButtonData(query.getData());
+        var keyboard = Keyboard.fromButtonData(query.getData());
         return switch (keyboard) {
             case MAIN -> mainMenuButtonHandler.handle(query);
             case ACCOUNT -> accountMenuButtonHandler.handle(query);

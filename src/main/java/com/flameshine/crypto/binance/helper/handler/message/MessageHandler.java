@@ -5,7 +5,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import com.flameshine.crypto.binance.helper.model.Response;
 
 /**
- * Handles messages sent by a user.
+ * Handles text messages sent by a user.
  */
 
 public interface MessageHandler {

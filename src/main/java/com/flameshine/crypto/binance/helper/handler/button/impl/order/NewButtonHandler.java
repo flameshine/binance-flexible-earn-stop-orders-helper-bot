@@ -24,7 +24,7 @@ public class NewButtonHandler implements ButtonHandler {
 
         return new Response(
             List.of(sendMessage),
-            UserState.WAITING_FOR_TRADING_PAIR
+            UserState.WAITING_FOR_ORDER_DETAILS
         );
     }
 }

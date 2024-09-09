@@ -6,7 +6,7 @@ import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
-import com.flameshine.crypto.binance.helper.enums.KeyboardMenu;
+import com.flameshine.crypto.binance.helper.enums.Keyboard;
 import com.flameshine.crypto.binance.helper.handler.message.MessageHandler;
 import com.flameshine.crypto.binance.helper.model.Response;
 import com.flameshine.crypto.binance.helper.util.Messages;
@@ -19,7 +19,7 @@ public class MainMenuCommandHandler implements MessageHandler {
         var sendMessage = SendMessage.builder()
             .chatId(message.getChatId())
             .parseMode(ParseMode.HTML)
-            .replyMarkup(KeyboardMenu.MAIN.getMarkup())
+            .replyMarkup(Keyboard.MAIN.getMarkup())
             .text(Messages.MAIN_MENU)
             .build();
 

@@ -15,6 +15,6 @@ public enum AccountMenuButton {
             }
         }
 
-        throw new IllegalArgumentException("Invalid account button: " + value);
+        throw new IllegalArgumentException("Invalid account menu button: " + value);
     }
 }

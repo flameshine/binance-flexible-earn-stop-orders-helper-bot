@@ -9,7 +9,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import com.flameshine.crypto.binance.helper.util.KeyboardMarkups;
 
 @Getter
-public enum KeyboardMenu {
+public enum Keyboard {
 
     MAIN(KeyboardMarkups.mainMenu()),
     ACCOUNT(KeyboardMarkups.accountMenu()),
@@ -17,11 +17,11 @@ public enum KeyboardMenu {
 
     private final InlineKeyboardMarkup markup;
 
-    KeyboardMenu(InlineKeyboardMarkup markup) {
+    Keyboard(InlineKeyboardMarkup markup) {
         this.markup = markup;
     }
 
-    public static KeyboardMenu fromButtonData(String data) {
+    public static Keyboard fromButtonData(String data) {
 
         for (var value : values()) {
 

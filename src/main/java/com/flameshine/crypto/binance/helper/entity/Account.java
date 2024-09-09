@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Set;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
-import io.quarkus.runtime.annotations.RegisterForReflection;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
@@ -18,7 +17,6 @@ import lombok.ToString;
 
 @Entity
 @Table(name = "account")
-@RegisterForReflection
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

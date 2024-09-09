@@ -11,10 +11,13 @@ public class Messages {
     public static final String MAIN_MENU = "Please use the menu below to navigate the bot's functionality.";
     public static final String ACCOUNT_MENU = "In this section you can manage your Binance accounts connected.";
     public static final String ORDER_MENU = "In this section you can configure stop-limit orders for the selected Binance account.";
-    public static final String API_KEY_SETUP_SUCCESS = "Account was successfully connected!";
+    public static final String UNRECOGNIZED_MESSAGE = "Sorry, I didn't recognize your command. Type /help for assistance.";
+    public static final String API_KEY_SETUP_SUCCESS = "Account was connected successfully!";
     public static final String API_KEY_SETUP_FAILURE = "Sorry, your message format seems incorrect. Please try again: ";
     public static final String ACCOUNT_LIST = "Currently connected accounts: ";
     public static final String ACCOUNT_DISCONNECTION_SUCCESS = "Your account was disconnected successfully.";
+    public static final String ORDER_CREATION_FAILURE = "Sorry, your order format seems incorrect. Please try again: ";
+    public static final String ORDER_CREATION_SUCCESS = "Stop-limit order was created successfully!";
 
     public static final String HELP = """
         I can help you configure stop-limit orders without withdrawing your assets from Binance Flexible Earn.
@@ -48,7 +51,15 @@ public class Messages {
         Your stop-limit orders will be cancelled.
         """;
 
-    private static final String ORDER_CREATION_TRADING_PAIR = "Please specify the trading pair (e.g., BNB/USDT)";
+    private static final String ORDER_CREATION_TRADING_PAIR = """
+        Please specify the order details in the following format:
+        
+        `<account name>: <base/quote> - <price>`
+        
+        Example:
+        
+        `account1: BNB/USDT - 465`
+        """;
 
     private static final String GREETING = """
         Before you can to leverage the bot's functionality, you'll need to connect your first Binance account. See instructions below.
@@ -72,11 +83,11 @@ public class Messages {
     private static final String ACCOUNT_SETUP = """
         Please share your Binance API key using the following format:
         
-        <name> - <value>
+        `<name> - <value>`
         
         Example:
         
-        My key - ECN38H48Su5TdxxV4YO9CeXy
+        `account1 - ECN38H48Su5TdxxV4YO9CeXy`
         """;
 
     public static String greeting() {
@@ -96,6 +107,6 @@ public class Messages {
     }
 
     private static String escapeMarkdown(String input) {
-        return input.replaceAll("(?=[]\\[+&|!(){}<>^\"~*?:.\\-])", "\\\\");
+        return input.replaceAll("(?=[.<>\\-])", "\\\\");
     }
 }

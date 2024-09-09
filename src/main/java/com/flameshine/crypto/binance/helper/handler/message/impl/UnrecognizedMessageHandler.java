@@ -1,4 +1,4 @@
-package com.flameshine.crypto.binance.helper.handler.message.impl.command;
+package com.flameshine.crypto.binance.helper.handler.message.impl;
 
 import java.util.List;
 
@@ -9,14 +9,14 @@ import com.flameshine.crypto.binance.helper.handler.message.MessageHandler;
 import com.flameshine.crypto.binance.helper.model.Response;
 import com.flameshine.crypto.binance.helper.util.Messages;
 
-public class HelpCommandHandler implements MessageHandler {
+public class UnrecognizedMessageHandler implements MessageHandler {
 
     @Override
     public Response handle(Message message) {
 
         var sendMessage = SendMessage.builder()
             .chatId(message.getChatId())
-            .text(Messages.HELP)
+            .text(Messages.UNRECOGNIZED_MESSAGE)
             .build();
 
         return new Response(

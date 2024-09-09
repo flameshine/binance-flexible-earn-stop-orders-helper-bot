@@ -11,7 +11,7 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageTe
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 
 import com.flameshine.crypto.binance.helper.enums.AccountMenuButton;
-import com.flameshine.crypto.binance.helper.enums.KeyboardMenu;
+import com.flameshine.crypto.binance.helper.enums.Keyboard;
 import com.flameshine.crypto.binance.helper.handler.button.ButtonHandler;
 import com.flameshine.crypto.binance.helper.model.Response;
 import com.flameshine.crypto.binance.helper.util.Messages;
@@ -37,16 +37,15 @@ public class AccountMenuButtonHandler implements ButtonHandler {
     public Response handle(CallbackQuery query) {
 
         var message = query.getMessage();
-        var chatId = message.getChatId();
 
         var text = EditMessageText.builder()
-            .chatId(chatId)
+            .chatId(message.getChatId())
             .messageId(message.getMessageId())
             .text("")
             .build();
 
         var markup = EditMessageReplyMarkup.builder()
-            .chatId(chatId)
+            .chatId(message.getChatId())
             .messageId(message.getMessageId())
             .build();
 
@@ -68,7 +67,7 @@ public class AccountMenuButtonHandler implements ButtonHandler {
 
             case BACK -> {
                 text.setText(Messages.MAIN_MENU);
-                markup.setReplyMarkup(KeyboardMenu.MAIN.getMarkup());
+                markup.setReplyMarkup(Keyboard.MAIN.getMarkup());
             }
         }
 

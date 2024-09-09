@@ -7,7 +7,7 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageRe
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 
-import com.flameshine.crypto.binance.helper.enums.KeyboardMenu;
+import com.flameshine.crypto.binance.helper.enums.Keyboard;
 import com.flameshine.crypto.binance.helper.enums.MainMenuButton;
 import com.flameshine.crypto.binance.helper.handler.button.ButtonHandler;
 import com.flameshine.crypto.binance.helper.model.Response;
@@ -43,12 +43,12 @@ public class MainMenuButtonHandler implements ButtonHandler {
 
             case ACCOUNTS -> {
                 text.setText(Messages.ACCOUNT_MENU);
-                markup.setReplyMarkup(KeyboardMenu.ACCOUNT.getMarkup());
+                markup.setReplyMarkup(Keyboard.ACCOUNT.getMarkup());
             }
 
             case ORDERS -> {
                 text.setText(Messages.ORDER_MENU);
-                markup.setReplyMarkup(KeyboardMenu.ORDER.getMarkup());
+                markup.setReplyMarkup(Keyboard.ORDER.getMarkup());
             }
 
             case SUPPORT -> {
