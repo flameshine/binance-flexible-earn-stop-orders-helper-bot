@@ -33,26 +33,23 @@ public class BinanceFlexibleEarnStopLimitsHelperBot extends TelegramLongPollingB
     private static final Map<Long, UserState> USER_STATE = new ConcurrentHashMap<>();
 
     private final Orchestrator<Message> commandOrchestrator;
-    private final Orchestrator<CallbackQuery> menuButtonOrchestrator;
+    private final Orchestrator<CallbackQuery> buttonOrchestrator;
     private final MessageHandler apiKeyMessageHandler;
-    private final MessageHandler accountDisconnectMessageHandler;
     private final MessageHandler orderDetailsMessageHandler;
     private final MessageHandler unrecognizedMessageHandler;
     private final String username;
 
     @Inject
     public BinanceFlexibleEarnStopLimitsHelperBot(
-        Orchestrator<CallbackQuery> menuButtonOrchestrator,
+        Orchestrator<CallbackQuery> buttonOrchestrator,
         @Named("apiKeyMessageHandler") MessageHandler apiKeyMessageHandler,
-        @Named("accountDisconnectMessageHandler") MessageHandler accountDisconnectMessageHandler,
         @Named("orderDetailsMessageHandler") MessageHandler orderDetailsMessageHandler,
         BotConfig config
     ) {
         super(config.token());
         this.commandOrchestrator = new CommandOrchestrator();
-        this.menuButtonOrchestrator = menuButtonOrchestrator;
+        this.buttonOrchestrator = buttonOrchestrator;
         this.apiKeyMessageHandler = apiKeyMessageHandler;
-        this.accountDisconnectMessageHandler = accountDisconnectMessageHandler;
         this.orderDetailsMessageHandler = orderDetailsMessageHandler;
         this.unrecognizedMessageHandler = new UnrecognizedMessageHandler();
         this.username = config.username();
@@ -79,7 +76,7 @@ public class BinanceFlexibleEarnStopLimitsHelperBot extends TelegramLongPollingB
     }
 
     private Response handleButtonTap(CallbackQuery query) {
-        var response = menuButtonOrchestrator.orchestrate(query);
+        var response = buttonOrchestrator.orchestrate(query);
         USER_STATE.put(query.getFrom().getId(), response.state());
         return response;
     }
@@ -89,17 +86,18 @@ public class BinanceFlexibleEarnStopLimitsHelperBot extends TelegramLongPollingB
         var chatId = message.getChatId();
 
         if (message.isCommand()) {
-            USER_STATE.put(chatId, UserState.STATELESS);
-            return commandOrchestrator.orchestrate(message);
+            var response = commandOrchestrator.orchestrate(message);
+            USER_STATE.put(chatId, response.state());
+            return response;
         }
 
         var state = USER_STATE.getOrDefault(chatId, UserState.STATELESS);
 
         var response = switch (state) {
             case STATELESS -> unrecognizedMessageHandler.handle(message);
-            case WAITING_FOR_API_KEY -> apiKeyMessageHandler.handle(message);
-            case WAITING_FOR_ACCOUNT_TO_DISCONNECT -> accountDisconnectMessageHandler.handle(message);
+            case WAITING_FOR_KEY_DETAILS -> apiKeyMessageHandler.handle(message);
             case WAITING_FOR_ORDER_DETAILS -> orderDetailsMessageHandler.handle(message);
+            case WAITING_FOR_KEY_TO_LIST_ORDERS -> throw new UnsupportedOperationException();
         };
 
         USER_STATE.put(chatId, response.state());

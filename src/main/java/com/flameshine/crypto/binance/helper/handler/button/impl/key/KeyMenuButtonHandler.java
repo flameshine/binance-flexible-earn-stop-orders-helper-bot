@@ -1,4 +1,4 @@
-package com.flameshine.crypto.binance.helper.handler.button.impl.account;
+package com.flameshine.crypto.binance.helper.handler.button.impl.key;
 
 import java.util.List;
 
@@ -10,27 +10,28 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageRe
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 
-import com.flameshine.crypto.binance.helper.enums.AccountMenuButton;
+import com.flameshine.crypto.binance.helper.enums.KeyMenuButton;
 import com.flameshine.crypto.binance.helper.enums.Keyboard;
 import com.flameshine.crypto.binance.helper.handler.button.ButtonHandler;
 import com.flameshine.crypto.binance.helper.model.Response;
 import com.flameshine.crypto.binance.helper.util.Messages;
 
 @ApplicationScoped
-@Named("accountMenuButtonHandler")
-public class AccountMenuButtonHandler implements ButtonHandler {
+@Named("keyMenuButtonHandler")
+public class KeyMenuButtonHandler implements ButtonHandler {
 
     private final ButtonHandler listButtonHandler;
-    private final ButtonHandler connectButtonHandler;
-    private final ButtonHandler disconnectButtonHandler;
+    private final ButtonHandler addButtonHandler;
+    private final ButtonHandler removeButtonHandler;
 
     @Inject
-    public AccountMenuButtonHandler(
-        @Named("accountListButtonHandler") ButtonHandler listButtonHandler
+    public KeyMenuButtonHandler(
+        @Named("keyListButtonHandler") ButtonHandler listButtonHandler,
+        @Named("keyRemoveButtonHandler") ButtonHandler removeButtonHandler
     ) {
         this.listButtonHandler = listButtonHandler;
-        this.connectButtonHandler = new ConnectButtonHandler();
-        this.disconnectButtonHandler = new DisconnectButtonHandler();
+        this.addButtonHandler = new AddButtonHandler();
+        this.removeButtonHandler = removeButtonHandler;
     }
 
     @Override
@@ -49,20 +50,20 @@ public class AccountMenuButtonHandler implements ButtonHandler {
             .messageId(message.getMessageId())
             .build();
 
-        var buttonData = AccountMenuButton.fromValue(query.getData());
+        var buttonData = KeyMenuButton.fromValue(query.getData());
 
         switch (buttonData) {
 
-            case USER_ACCOUNTS -> {
+            case USER_KEYS -> {
                 return listButtonHandler.handle(query);
             }
 
-            case CONNECT -> {
-                return connectButtonHandler.handle(query);
+            case ADD -> {
+                return addButtonHandler.handle(query);
             }
 
-            case DISCONNECT -> {
-                return disconnectButtonHandler.handle(query);
+            case REMOVE -> {
+                return removeButtonHandler.handle(query);
             }
 
             case BACK -> {

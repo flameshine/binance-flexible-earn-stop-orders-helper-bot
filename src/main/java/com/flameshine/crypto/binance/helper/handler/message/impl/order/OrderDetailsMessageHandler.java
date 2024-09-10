@@ -1,4 +1,4 @@
-package com.flameshine.crypto.binance.helper.handler.message.impl;
+package com.flameshine.crypto.binance.helper.handler.message.impl.order;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -10,8 +10,8 @@ import jakarta.transaction.Transactional;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
-import com.flameshine.crypto.binance.helper.entity.Account;
-import com.flameshine.crypto.binance.helper.entity.StopOrder;
+import com.flameshine.crypto.binance.helper.entity.Key;
+import com.flameshine.crypto.binance.helper.entity.Order;
 import com.flameshine.crypto.binance.helper.enums.UserState;
 import com.flameshine.crypto.binance.helper.handler.message.MessageHandler;
 import com.flameshine.crypto.binance.helper.model.Response;
@@ -44,12 +44,12 @@ public class OrderDetailsMessageHandler implements MessageHandler {
             );
         }
 
-        var account = Account.findByName(matcher.group(1));
+        var key = Key.findByLabel(matcher.group(1));
 
-        if (account == null) {
+        if (key == null) {
 
             var sendMessage = sendMessageBuilder
-                .text(Messages.UNKNOWN_ACCOUNT)
+                .text(Messages.UNRECOGNIZED_KEY)
                 .build();
 
             return new Response(
@@ -58,11 +58,11 @@ public class OrderDetailsMessageHandler implements MessageHandler {
             );
         }
 
-        var order = StopOrder.builder()
+        var order = Order.builder()
             .base(matcher.group(2))
             .quote(matcher.group(3))
             .target(new BigDecimal(matcher.group(4)))
-            .account(account)
+            .key(key)
             .build();
 
         order.persist();

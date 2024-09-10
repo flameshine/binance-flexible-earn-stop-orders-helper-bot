@@ -11,7 +11,7 @@ import com.flameshine.crypto.binance.helper.handler.button.ButtonHandler;
 import com.flameshine.crypto.binance.helper.model.Response;
 import com.flameshine.crypto.binance.helper.util.Messages;
 
-public class NewButtonHandler implements ButtonHandler {
+class NewButtonHandler implements ButtonHandler {
 
     @Override
     public Response handle(CallbackQuery query) {

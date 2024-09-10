@@ -27,12 +27,12 @@ public class StartCommandHandler implements MessageHandler {
         // TODO: check if user already has one and handle it
 
         var apiKeySetupMessage = sendMessageBuilder
-            .text(Messages.accountSetup())
+            .text(Messages.keySetup())
             .build();
 
         return new Response(
             List.of(greetingMessage, apiKeySetupMessage),
-            UserState.WAITING_FOR_API_KEY
+            UserState.WAITING_FOR_KEY_DETAILS
         );
     }
 }

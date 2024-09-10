@@ -2,7 +2,7 @@ package com.flameshine.crypto.binance.helper.enums;
 
 public enum MainMenuButton {
 
-    ACCOUNTS,
+    KEYS,
     ORDERS,
     HELP,
     SUPPORT;

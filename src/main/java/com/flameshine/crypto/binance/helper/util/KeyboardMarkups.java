@@ -1,17 +1,20 @@
 package com.flameshine.crypto.binance.helper.util;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import lombok.experimental.UtilityClass;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
-import com.flameshine.crypto.binance.helper.entity.Account;
+import com.flameshine.crypto.binance.helper.entity.Key;
 
 // TODO: add emojis
 
 @UtilityClass
 public class KeyboardMarkups {
+
+    public static final String KEY_REMOVE_PREFIX = "remove#";
 
     private static final InlineKeyboardButton BACK = InlineKeyboardButton.builder()
         .text("Back")
@@ -20,9 +23,9 @@ public class KeyboardMarkups {
 
     public static InlineKeyboardMarkup mainMenu() {
 
-        var accounts = InlineKeyboardButton.builder()
-            .text("Accounts")
-            .callbackData("accounts")
+        var keys = InlineKeyboardButton.builder()
+            .text("API Keys")
+            .callbackData("keys")
             .build();
 
         var orders = InlineKeyboardButton.builder()
@@ -41,29 +44,29 @@ public class KeyboardMarkups {
             .build();
 
         return InlineKeyboardMarkup.builder()
-            .keyboardRow(List.of(accounts, orders, help, support))
+            .keyboardRow(List.of(keys, orders, help, support))
             .build();
     }
 
-    public static InlineKeyboardMarkup accountMenu() {
+    public static InlineKeyboardMarkup keyMenu() {
 
-        var userAccounts = InlineKeyboardButton.builder()
-            .text("Your accounts")
-            .callbackData("user_accounts")
+        var userKeys = InlineKeyboardButton.builder()
+            .text("Your keys")
+            .callbackData("user_keys")
             .build();
 
-        var connect = InlineKeyboardButton.builder()
-            .text("Connect")
-            .callbackData("connect")
+        var add = InlineKeyboardButton.builder()
+            .text("Add")
+            .callbackData("add")
             .build();
 
-        var disconnect = InlineKeyboardButton.builder()
-            .text("Disconnect")
-            .callbackData("disconnect")
+        var remove = InlineKeyboardButton.builder()
+            .text("Remove")
+            .callbackData("remove")
             .build();
 
         return InlineKeyboardMarkup.builder()
-            .keyboardRow(List.of(userAccounts, connect, disconnect, BACK))
+            .keyboardRow(List.of(userKeys, add, remove, BACK))
             .build();
     }
 
@@ -89,10 +92,15 @@ public class KeyboardMarkups {
             .build();
     }
 
-    public static InlineKeyboardMarkup accountList(List<Account> accounts) {
+    public static InlineKeyboardMarkup keyList(List<Key> keys, boolean appendRemovalPrefix) {
 
-        var keyboard = accounts.stream()
-            .map(KeyboardMarkups::toKeyboardRow)
+        var keyButtons = keys.stream()
+            .map(key -> toKeyboardRow(key, appendRemovalPrefix))
+            .toList();
+
+        // TODO: fix the "back" button (should return to the previous menu)
+
+        var keyboard = Stream.of(keyButtons, List.of(BACK))
             .toList();
 
         return InlineKeyboardMarkup.builder()
@@ -100,13 +108,11 @@ public class KeyboardMarkups {
             .build();
     }
 
-    private static List<InlineKeyboardButton> toKeyboardRow(Account account) {
-
-        var button =  InlineKeyboardButton.builder()
-            .text(account.getName())
-            .callbackData(account.getName())
+    private static InlineKeyboardButton toKeyboardRow(Key key, boolean appendRemovalPrefix) {
+        var callbackData = appendRemovalPrefix ? KEY_REMOVE_PREFIX + key.getLabel() : key.getLabel();
+        return InlineKeyboardButton.builder()
+            .text(key.getLabel())
+            .callbackData(callbackData)
             .build();
-
-        return List.of(button);
     }
 }

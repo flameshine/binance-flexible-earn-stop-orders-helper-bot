@@ -16,34 +16,34 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Entity
-@Table(name = "account")
+@Table(name = "api_key") // "key" is a reserved keyword in SQL
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class Account extends PanacheEntity {
+public class Key extends PanacheEntity {
 
     @Column(name = "telegram_user_id", nullable = false)
     private Long telegramUserId;
 
-    @Column(name = "name", unique = true, nullable = false)
-    private String name;
+    @Column(name = "label", unique = true, nullable = false)
+    private String label;
 
     // TODO: encrypt/secure the field below
 
-    @Column(name = "binance_api_key", unique = true, nullable = false)
-    private String binanceApiKey;
+    @Column(name = "value", unique = true, nullable = false)
+    private String value;
 
-    @OneToMany(mappedBy = "account")
-    private Set<StopOrder> orders;
+    @OneToMany(mappedBy = "key")
+    private Set<Order> orders;
 
-    public static Account findByName(String name) {
-        return find("name", name).firstResult();
+    public static Key findByLabel(String label) {
+        return find("label", label).firstResult();
     }
 
-    public static List<Account> findAllByTelegramUserId(Long telegramUserId) {
+    public static List<Key> findAllByTelegramUserId(Long telegramUserId) {
         return find("telegramUserId", telegramUserId).list();
     }
 }

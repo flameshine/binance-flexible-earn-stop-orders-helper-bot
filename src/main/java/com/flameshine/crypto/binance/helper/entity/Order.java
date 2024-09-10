@@ -23,7 +23,7 @@ import lombok.ToString;
 @Getter
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class StopOrder extends PanacheEntity {
+public class Order extends PanacheEntity {
 
     // TODO: replace the field below with some Binance-provided enum if possible
 
@@ -37,6 +37,6 @@ public class StopOrder extends PanacheEntity {
     private BigDecimal target;
 
     @ManyToOne
-    @JoinColumn(name = "account_id", nullable = false)
-    private Account account;
+    @JoinColumn(name = "key_id", nullable = false)
+    private Key key;
 }

@@ -1,4 +1,4 @@
-package com.flameshine.crypto.binance.helper.handler.button.impl.account;
+package com.flameshine.crypto.binance.helper.handler.button.impl.key;
 
 import java.util.List;
 
@@ -11,20 +11,20 @@ import com.flameshine.crypto.binance.helper.handler.button.ButtonHandler;
 import com.flameshine.crypto.binance.helper.model.Response;
 import com.flameshine.crypto.binance.helper.util.Messages;
 
-public class ConnectButtonHandler implements ButtonHandler {
+class AddButtonHandler implements ButtonHandler {
 
     @Override
     public Response handle(CallbackQuery query) {
 
         var sendMessage = SendMessage.builder()
             .chatId(query.getMessage().getChatId())
-            .text(Messages.accountSetup())
+            .text(Messages.keySetup())
             .parseMode(ParseMode.MARKDOWNV2)
             .build();
 
         return new Response(
             List.of(sendMessage),
-            UserState.WAITING_FOR_API_KEY
+            UserState.WAITING_FOR_KEY_DETAILS
         );
     }
 }

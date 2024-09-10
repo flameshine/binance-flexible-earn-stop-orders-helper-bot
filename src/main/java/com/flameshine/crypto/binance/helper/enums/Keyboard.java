@@ -12,7 +12,7 @@ import com.flameshine.crypto.binance.helper.util.KeyboardMarkups;
 public enum Keyboard {
 
     MAIN(KeyboardMarkups.mainMenu()),
-    ACCOUNT(KeyboardMarkups.accountMenu()),
+    KEY(KeyboardMarkups.keyMenu()),
     ORDER(KeyboardMarkups.orderMenu());
 
     private final InlineKeyboardMarkup markup;

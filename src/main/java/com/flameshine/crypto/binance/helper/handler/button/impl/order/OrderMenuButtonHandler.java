@@ -18,9 +18,11 @@ import com.flameshine.crypto.binance.helper.util.Messages;
 public class OrderMenuButtonHandler implements ButtonHandler {
 
     private final ButtonHandler newButtonHandler;
+    private final ButtonHandler listButtonHandler;
 
     public OrderMenuButtonHandler() {
         this.newButtonHandler = new NewButtonHandler();
+        this.listButtonHandler = new ListButtonHandler();
     }
 
     @Override
@@ -47,7 +49,9 @@ public class OrderMenuButtonHandler implements ButtonHandler {
                 return newButtonHandler.handle(query);
             }
 
-            case USER_ORDERS -> {}
+            case USER_ORDERS -> {
+                return listButtonHandler.handle(query);
+            }
 
             case CANCEL -> {}
 

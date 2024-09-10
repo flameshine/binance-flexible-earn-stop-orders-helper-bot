@@ -1,4 +1,4 @@
-package com.flameshine.crypto.binance.helper.handler.message.impl;
+package com.flameshine.crypto.binance.helper.handler.message.impl.key;
 
 import java.util.List;
 import java.util.regex.Pattern;
@@ -9,7 +9,7 @@ import jakarta.transaction.Transactional;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
-import com.flameshine.crypto.binance.helper.entity.Account;
+import com.flameshine.crypto.binance.helper.entity.Key;
 import com.flameshine.crypto.binance.helper.enums.UserState;
 import com.flameshine.crypto.binance.helper.handler.message.MessageHandler;
 import com.flameshine.crypto.binance.helper.model.Response;
@@ -17,7 +17,7 @@ import com.flameshine.crypto.binance.helper.util.Messages;
 
 @ApplicationScoped
 @Named("apiKeyMessageHandler")
-public class ApiKeyMessageHandler implements MessageHandler {
+public class KeySetupMessageHandler implements MessageHandler {
 
     private static final Pattern API_KEY_PATTERN = Pattern.compile("(\\S+)\\s*-\\s*(\\S+)");
 
@@ -33,25 +33,25 @@ public class ApiKeyMessageHandler implements MessageHandler {
         if (!matcher.matches()) {
 
             var sendMessage = sendMessageBuilder
-                .text(Messages.API_KEY_SETUP_FAILURE)
+                .text(Messages.KEY_SETUP_FAILURE)
                 .build();
 
             return new Response(
                 List.of(sendMessage),
-                UserState.WAITING_FOR_API_KEY
+                UserState.WAITING_FOR_KEY_DETAILS
             );
         }
 
-        var account = Account.builder()
+        var key = Key.builder()
             .telegramUserId(message.getFrom().getId())
-            .name(matcher.group(1))
-            .binanceApiKey(matcher.group(2))
+            .label(matcher.group(1))
+            .value(matcher.group(2))
             .build();
 
-        account.persist();
+        key.persist();
 
         var sendMessage = sendMessageBuilder
-            .text(Messages.API_KEY_SETUP_SUCCESS)
+            .text(Messages.KEY_SETUP_SUCCESS)
             .build();
 
         return new Response(

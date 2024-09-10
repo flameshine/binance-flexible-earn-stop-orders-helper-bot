@@ -1,4 +1,4 @@
-package com.flameshine.crypto.binance.helper.handler.button.impl.account;
+package com.flameshine.crypto.binance.helper.handler.button.impl.key;
 
 import java.util.List;
 
@@ -11,15 +11,15 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageRe
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 
-import com.flameshine.crypto.binance.helper.entity.Account;
+import com.flameshine.crypto.binance.helper.entity.Key;
 import com.flameshine.crypto.binance.helper.handler.button.ButtonHandler;
 import com.flameshine.crypto.binance.helper.model.Response;
 import com.flameshine.crypto.binance.helper.util.KeyboardMarkups;
 import com.flameshine.crypto.binance.helper.util.Messages;
 
 @ApplicationScoped
-@Named("accountListButtonHandler")
-public class ListButtonHandler implements ButtonHandler {
+@Named("keyRemoveButtonHandler")
+class RemoveButtonHandler implements ButtonHandler {
 
     @Override
     @Transactional
@@ -27,13 +27,13 @@ public class ListButtonHandler implements ButtonHandler {
 
         var message = query.getMessage();
         var chatId = message.getChatId();
-        var accounts = Account.findAllByTelegramUserId(query.getFrom().getId());
+        var keys = Key.findAllByTelegramUserId(query.getFrom().getId());
 
-        if (accounts.isEmpty()) {
+        if (keys.isEmpty()) {
 
             var sendMessage = SendMessage.builder()
                 .chatId(chatId)
-                .text(Messages.EMPTY_ACCOUNT_LIST)
+                .text(Messages.EMPTY_KEY_LIST)
                 .build();
 
             return new Response(
@@ -44,13 +44,13 @@ public class ListButtonHandler implements ButtonHandler {
         var text = EditMessageText.builder()
             .chatId(chatId)
             .messageId(message.getMessageId())
-            .text(Messages.ACCOUNT_LIST)
+            .text(Messages.KEY_REMOVAL)
             .build();
 
         var markup = EditMessageReplyMarkup.builder()
             .chatId(chatId)
             .messageId(message.getMessageId())
-            .replyMarkup(KeyboardMarkups.accountList(accounts))
+            .replyMarkup(KeyboardMarkups.keyList(keys, true))
             .build();
 
         var answer = AnswerCallbackQuery.builder()

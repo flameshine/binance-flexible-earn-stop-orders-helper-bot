@@ -1,60 +1,57 @@
-package com.flameshine.crypto.binance.helper.handler.button.impl.main;
+package com.flameshine.crypto.binance.helper.handler.button.impl.key;
 
 import java.util.List;
 
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Named;
+import jakarta.transaction.Transactional;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 
-import com.flameshine.crypto.binance.helper.enums.Keyboard;
-import com.flameshine.crypto.binance.helper.enums.MainMenuButton;
+import com.flameshine.crypto.binance.helper.entity.Key;
 import com.flameshine.crypto.binance.helper.handler.button.ButtonHandler;
 import com.flameshine.crypto.binance.helper.model.Response;
+import com.flameshine.crypto.binance.helper.util.KeyboardMarkups;
 import com.flameshine.crypto.binance.helper.util.Messages;
 
-public class MainMenuButtonHandler implements ButtonHandler {
-
-    private final ButtonHandler supportButtonHandler;
-
-    public MainMenuButtonHandler() {
-        this.supportButtonHandler = new SupportButtonHandler();
-    }
+@ApplicationScoped
+@Named("keyListButtonHandler")
+class ListButtonHandler implements ButtonHandler {
 
     @Override
+    @Transactional
     public Response handle(CallbackQuery query) {
 
         var message = query.getMessage();
+        var chatId = message.getChatId();
+        var keys = Key.findAllByTelegramUserId(query.getFrom().getId());
+
+        if (keys.isEmpty()) {
+
+            var sendMessage = SendMessage.builder()
+                .chatId(chatId)
+                .text(Messages.EMPTY_KEY_LIST)
+                .build();
+
+            return new Response(
+                List.of(sendMessage)
+            );
+        }
 
         var text = EditMessageText.builder()
-            .chatId(message.getChatId())
+            .chatId(chatId)
             .messageId(message.getMessageId())
-            .text("")
+            .text(Messages.KEY_LIST)
             .build();
 
         var markup = EditMessageReplyMarkup.builder()
-            .chatId(message.getChatId())
+            .chatId(chatId)
             .messageId(message.getMessageId())
+            .replyMarkup(KeyboardMarkups.keyList(keys, false))
             .build();
-
-        var buttonData = MainMenuButton.fromValue(query.getData());
-
-        switch (buttonData) {
-
-            case KEYS -> {
-                text.setText(Messages.KEY_MENU);
-                markup.setReplyMarkup(Keyboard.KEY.getMarkup());
-            }
-
-            case ORDERS -> {
-                text.setText(Messages.ORDER_MENU);
-                markup.setReplyMarkup(Keyboard.ORDER.getMarkup());
-            }
-
-            case SUPPORT -> {
-                return supportButtonHandler.handle(query);
-            }
-        }
 
         var answer = AnswerCallbackQuery.builder()
             .callbackQueryId(query.getId())
