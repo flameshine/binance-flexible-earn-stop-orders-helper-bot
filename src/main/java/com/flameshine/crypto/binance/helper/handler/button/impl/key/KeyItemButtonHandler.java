@@ -2,6 +2,7 @@ package com.flameshine.crypto.binance.helper.handler.button.impl.key;
 
 import java.util.List;
 
+import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Named;
 import jakarta.transaction.Transactional;
@@ -11,7 +12,6 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import com.flameshine.crypto.binance.helper.entity.Key;
 import com.flameshine.crypto.binance.helper.handler.button.ButtonHandler;
 import com.flameshine.crypto.binance.helper.model.Response;
-import com.flameshine.crypto.binance.helper.util.KeyboardMarkups;
 import com.flameshine.crypto.binance.helper.util.Messages;
 
 @ApplicationScoped
@@ -25,11 +25,11 @@ public class KeyItemButtonHandler implements ButtonHandler {
         var sendMessageBuilder = SendMessage.builder()
             .chatId(query.getMessage().getChatId());
 
-        var key = Key.findByLabel(
-            extractKeyLabel(query.getData())
+        var key = Key.findByIdOptional(
+            extractKeyId(query.getData())
         );
 
-        if (key == null) {
+        if (key.isEmpty()) {
 
             var sendMessage = sendMessageBuilder
                 .text(Messages.UNRECOGNIZED_KEY)
@@ -40,7 +40,7 @@ public class KeyItemButtonHandler implements ButtonHandler {
             );
         }
 
-        Key.deleteById(key.id);
+        key.ifPresent(PanacheEntityBase::delete);
 
         var sendMessage = sendMessageBuilder
             .text(Messages.KEY_REMOVAL_SUCCESS)
@@ -51,7 +51,11 @@ public class KeyItemButtonHandler implements ButtonHandler {
         );
     }
 
-    private static String extractKeyLabel(String input) {
-        return input.replaceFirst(KeyboardMarkups.KEY_REMOVE_PREFIX, "");
+    private static Long extractKeyId(String input) {
+        try {
+            return Long.parseLong(input.split("#")[1]);
+        } catch (NumberFormatException e) {
+            throw new IllegalStateException(e);
+        }
     }
 }

@@ -2,6 +2,9 @@ package com.flameshine.crypto.binance.helper.handler.button.impl.order;
 
 import java.util.List;
 
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
@@ -15,14 +18,19 @@ import com.flameshine.crypto.binance.helper.util.Messages;
 
 // TODO: finalize
 
+@ApplicationScoped
+@Named("orderMenuButtonHandler")
 public class OrderMenuButtonHandler implements ButtonHandler {
 
     private final ButtonHandler newButtonHandler;
     private final ButtonHandler listButtonHandler;
 
-    public OrderMenuButtonHandler() {
+    @Inject
+    public OrderMenuButtonHandler(
+        @Named("orderListButtonHandler") ButtonHandler listButtonHandler
+    ) {
         this.newButtonHandler = new NewButtonHandler();
-        this.listButtonHandler = new ListButtonHandler();
+        this.listButtonHandler = listButtonHandler;
     }
 
     @Override
@@ -45,12 +53,12 @@ public class OrderMenuButtonHandler implements ButtonHandler {
 
         switch (buttonData) {
 
-            case NEW -> {
-                return newButtonHandler.handle(query);
-            }
-
             case USER_ORDERS -> {
                 return listButtonHandler.handle(query);
+            }
+
+            case NEW -> {
+                return newButtonHandler.handle(query);
             }
 
             case CANCEL -> {}

@@ -1,6 +1,7 @@
 package com.flameshine.crypto.binance.helper.entity;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import jakarta.persistence.Column;
@@ -39,4 +40,8 @@ public class Order extends PanacheEntity {
     @ManyToOne
     @JoinColumn(name = "key_id", nullable = false)
     private Key key;
+
+    public static List<Order> findAllByKeys(List<Key> keys) {
+        return find("key in ?1", keys).list();
+    }
 }

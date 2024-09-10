@@ -9,16 +9,17 @@ import lombok.experimental.UtilityClass;
 public class Messages {
 
     public static final String MAIN_MENU = "Please use the menu below to navigate the bot's functionality.";
-    public static final String KEY_MENU = "In this section you can manage your Binance API keys connected.";
+    public static final String KEY_MENU = "In this section you can manage your Binance API keys added.";
     public static final String ORDER_MENU = "In this section you can configure stop-limit orders for the selected Binance key.";
     public static final String UNRECOGNIZED_MESSAGE = "Sorry, I didn't recognize your command. Type /help for assistance.";
     public static final String KEY_SETUP_SUCCESS = "Your API key was added successfully!";
     public static final String KEY_SETUP_FAILURE = "Sorry, your message format seems incorrect. Please try again: ";
-    public static final String KEY_LIST = "Currently connected keys: ";
+    public static final String KEY_LIST = "Your API keys: ";
     public static final String KEY_REMOVAL_SUCCESS = "Your key was removed successfully.";
     public static final String ORDER_CREATION_FAILURE = "Sorry, your order format seems incorrect. Please try again: ";
     public static final String ORDER_CREATION_SUCCESS = "Stop-limit order was created successfully!";
-    public static final String ORDER_LIST_KEY_SELECTION = "Please provide the name of your API key: ";
+    public static final String EMPTY_ORDER_LIST = "It looks like you haven't added any orders yet.";
+    public static final String ORDER_LIST = "Your orders: ";
 
     public static final String HELP = """
         I can help you configure stop-limit orders without withdrawing your assets from Binance Flexible Earn.
@@ -30,7 +31,7 @@ public class Messages {
         
         Main menu contains the following sections:
         
-        1. Keys. Manage connected Binance API keys.
+        1. Keys. Manage added Binance API keys.
         2. Orders. Handle stop-limit orders for the selected Binance key. You can view active orders, add new ones, or cancel them.
         3. Support. Find payment details if you'd like to support the developer.
         
@@ -38,13 +39,13 @@ public class Messages {
         """;
 
     public static final String EMPTY_KEY_LIST = """
-        You haven't connected any API keys yet.
+        You haven't added any API keys yet.
         To learn how, use the /start command.
         """;
 
     public static final String UNRECOGNIZED_KEY = """
         API key not recognized.
-        Please try again or connect one if you haven't done so already.
+        Please try again or add one if you haven't done so already.
         """;
 
     public static final String KEY_REMOVAL = """
@@ -63,7 +64,7 @@ public class Messages {
         """;
 
     private static final String GREETING = """
-        Before you can to leverage the bot's functionality, you'll need to connect your first Binance key. See instructions below.
+        Before you can to leverage the bot's functionality, you'll need to add your first Binance API key. See instructions below.
         
         [How to create API keys on Binance](https://www.binance.com/en/support/faq/how-to-create-api-keys-on-binance-360002502072)
         

@@ -26,6 +26,7 @@ import com.flameshine.crypto.binance.helper.orchestrator.Orchestrator;
 import com.flameshine.crypto.binance.helper.orchestrator.impl.CommandOrchestrator;
 
 // TODO: review language options
+// TODO: check unrecognized button taps (e.g. order item)
 
 @ApplicationScoped
 public class BinanceFlexibleEarnStopLimitsHelperBot extends TelegramLongPollingBot {
@@ -97,7 +98,6 @@ public class BinanceFlexibleEarnStopLimitsHelperBot extends TelegramLongPollingB
             case STATELESS -> unrecognizedMessageHandler.handle(message);
             case WAITING_FOR_KEY_DETAILS -> apiKeyMessageHandler.handle(message);
             case WAITING_FOR_ORDER_DETAILS -> orderDetailsMessageHandler.handle(message);
-            case WAITING_FOR_KEY_TO_LIST_ORDERS -> throw new UnsupportedOperationException();
         };
 
         USER_STATE.put(chatId, response.state());

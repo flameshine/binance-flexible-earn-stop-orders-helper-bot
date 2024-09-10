@@ -8,13 +8,15 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 import com.flameshine.crypto.binance.helper.entity.Key;
+import com.flameshine.crypto.binance.helper.entity.Order;
 
 // TODO: add emojis
 
 @UtilityClass
 public class KeyboardMarkups {
 
-    public static final String KEY_REMOVE_PREFIX = "remove#";
+    public static final String KEY_REMOVAL_PREFIX = "key-to-remove#";
+    public static final String ORDER_REMOVAL_PREFIX = "order-to-remove#";
 
     private static final InlineKeyboardButton BACK = InlineKeyboardButton.builder()
         .text("Back")
@@ -72,14 +74,14 @@ public class KeyboardMarkups {
 
     public static InlineKeyboardMarkup orderMenu() {
 
+        var userOrders = InlineKeyboardButton.builder()
+            .text("Your orders")
+            .callbackData("user_orders")
+            .build();
+
         var newOrder = InlineKeyboardButton.builder()
             .text("New")
             .callbackData("new")
-            .build();
-
-        var orders = InlineKeyboardButton.builder()
-            .text("Your orders")
-            .callbackData("orders")
             .build();
 
         var cancel = InlineKeyboardButton.builder()
@@ -88,7 +90,7 @@ public class KeyboardMarkups {
             .build();
 
         return InlineKeyboardMarkup.builder()
-            .keyboardRow(List.of(newOrder, orders, cancel, BACK))
+            .keyboardRow(List.of(userOrders, newOrder, cancel, BACK))
             .build();
     }
 
@@ -108,10 +110,52 @@ public class KeyboardMarkups {
             .build();
     }
 
-    private static InlineKeyboardButton toKeyboardRow(Key key, boolean appendRemovalPrefix) {
-        var callbackData = appendRemovalPrefix ? KEY_REMOVE_PREFIX + key.getLabel() : key.getLabel();
+    public static InlineKeyboardMarkup orderList(List<Order> orders, boolean appendRemovalPrefix) {
+
+        var orderButtons = orders.stream()
+            .map(order -> toKeyboardRow(order, appendRemovalPrefix))
+            .toList();
+
+        // TODO: fix the "back" button (should return to the previous menu)
+
+        var keyboard = Stream.of(orderButtons, List.of(BACK))
+            .toList();
+
+        return InlineKeyboardMarkup.builder()
+            .keyboard(keyboard)
+            .build();
+    }
+
+    private static InlineKeyboardButton toKeyboardRow(Key key, boolean appendItemId) {
+
+        var label = key.getLabel();
+
+        var callbackData = appendItemId
+            ? KEY_REMOVAL_PREFIX + key.id
+            : label;
+
         return InlineKeyboardButton.builder()
-            .text(key.getLabel())
+            .text(label)
+            .callbackData(callbackData)
+            .build();
+    }
+
+    private static InlineKeyboardButton toKeyboardRow(Order order, boolean appendItemId) {
+
+        var label = String.format(
+            "%s: %s/%s - %s",
+            order.getKey().getLabel(),
+            order.getBase(),
+            order.getQuote(),
+            order.getTarget()
+        );
+
+        var callbackData = appendItemId
+            ? ORDER_REMOVAL_PREFIX + order.id
+            : label;
+
+        return InlineKeyboardButton.builder()
+            .text(label)
             .callbackData(callbackData)
             .build();
     }
