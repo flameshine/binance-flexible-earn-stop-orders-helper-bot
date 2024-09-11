@@ -16,21 +16,22 @@ import com.flameshine.crypto.binance.helper.handler.button.ButtonHandler;
 import com.flameshine.crypto.binance.helper.model.Response;
 import com.flameshine.crypto.binance.helper.util.Messages;
 
-// TODO: finalize
-
 @ApplicationScoped
 @Named("orderMenuButtonHandler")
 public class OrderMenuButtonHandler implements ButtonHandler {
 
     private final ButtonHandler newButtonHandler;
     private final ButtonHandler listButtonHandler;
+    private final ButtonHandler cancelButtonHandler;
 
     @Inject
     public OrderMenuButtonHandler(
-        @Named("orderListButtonHandler") ButtonHandler listButtonHandler
+        @Named("orderListButtonHandler") ButtonHandler listButtonHandler,
+        @Named("orderCancelButtonHandler") ButtonHandler cancelButtonHandler
     ) {
         this.newButtonHandler = new NewButtonHandler();
         this.listButtonHandler = listButtonHandler;
+        this.cancelButtonHandler = cancelButtonHandler;
     }
 
     @Override
@@ -61,7 +62,9 @@ public class OrderMenuButtonHandler implements ButtonHandler {
                 return newButtonHandler.handle(query);
             }
 
-            case CANCEL -> {}
+            case CANCEL -> {
+                return cancelButtonHandler.handle(query);
+            }
 
             case BACK -> {
                 text.setText(Messages.MAIN_MENU);

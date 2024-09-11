@@ -15,9 +15,6 @@ import com.flameshine.crypto.binance.helper.entity.Order;
 @UtilityClass
 public class KeyboardMarkups {
 
-    public static final String KEY_REMOVAL_PREFIX = "key-to-remove#";
-    public static final String ORDER_REMOVAL_PREFIX = "order-to-remove#";
-
     private static final InlineKeyboardButton BACK = InlineKeyboardButton.builder()
         .text("Back")
         .callbackData("back")
@@ -102,7 +99,7 @@ public class KeyboardMarkups {
 
         // TODO: fix the "back" button (should return to the previous menu)
 
-        var keyboard = Stream.of(keyButtons, List.of(BACK))
+        var keyboard = Stream.concat(keyButtons.stream(), Stream.of(List.of(BACK)))
             .toList();
 
         return InlineKeyboardMarkup.builder()
@@ -118,7 +115,7 @@ public class KeyboardMarkups {
 
         // TODO: fix the "back" button (should return to the previous menu)
 
-        var keyboard = Stream.of(orderButtons, List.of(BACK))
+        var keyboard = Stream.concat(orderButtons.stream(), Stream.of(List.of(BACK)))
             .toList();
 
         return InlineKeyboardMarkup.builder()
@@ -126,21 +123,23 @@ public class KeyboardMarkups {
             .build();
     }
 
-    private static InlineKeyboardButton toKeyboardRow(Key key, boolean appendItemId) {
+    private static List<InlineKeyboardButton> toKeyboardRow(Key key, boolean appendItemId) {
 
         var label = key.getLabel();
 
         var callbackData = appendItemId
-            ? KEY_REMOVAL_PREFIX + key.id
+            ? ItemRemovalPrefixes.KEY + key.id
             : label;
 
-        return InlineKeyboardButton.builder()
+        var button = InlineKeyboardButton.builder()
             .text(label)
             .callbackData(callbackData)
             .build();
+
+        return List.of(button);
     }
 
-    private static InlineKeyboardButton toKeyboardRow(Order order, boolean appendItemId) {
+    private static List<InlineKeyboardButton> toKeyboardRow(Order order, boolean appendItemId) {
 
         var label = String.format(
             "%s: %s/%s - %s",
@@ -151,12 +150,14 @@ public class KeyboardMarkups {
         );
 
         var callbackData = appendItemId
-            ? ORDER_REMOVAL_PREFIX + order.id
+            ? ItemRemovalPrefixes.ORDER + order.id
             : label;
 
-        return InlineKeyboardButton.builder()
+        var button = InlineKeyboardButton.builder()
             .text(label)
             .callbackData(callbackData)
             .build();
+
+        return List.of(button);
     }
 }

@@ -20,6 +20,8 @@ public class Messages {
     public static final String ORDER_CREATION_SUCCESS = "Stop-limit order was created successfully!";
     public static final String EMPTY_ORDER_LIST = "It looks like you haven't added any orders yet.";
     public static final String ORDER_LIST = "Your orders: ";
+    public static final String ORDER_CANCELLATION = "Please select an order you'd like to cancel: ";
+    public static final String ORDER_CANCELLATION_SUCCESS = "Your order was cancelled successfully.";
 
     public static final String HELP = """
         I can help you configure stop-limit orders without withdrawing your assets from Binance Flexible Earn.

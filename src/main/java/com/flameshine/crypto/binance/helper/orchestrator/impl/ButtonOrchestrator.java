@@ -10,7 +10,7 @@ import com.flameshine.crypto.binance.helper.handler.button.ButtonHandler;
 import com.flameshine.crypto.binance.helper.handler.button.impl.main.MainMenuButtonHandler;
 import com.flameshine.crypto.binance.helper.model.Response;
 import com.flameshine.crypto.binance.helper.orchestrator.Orchestrator;
-import com.flameshine.crypto.binance.helper.util.KeyboardMarkups;
+import com.flameshine.crypto.binance.helper.util.ItemRemovalPrefixes;
 
 @ApplicationScoped
 public class ButtonOrchestrator implements Orchestrator<CallbackQuery> {
@@ -19,27 +19,36 @@ public class ButtonOrchestrator implements Orchestrator<CallbackQuery> {
     private final ButtonHandler keyMenuButtonHandler;
     private final ButtonHandler orderMenuButtonHandler;
     private final ButtonHandler keyItemButtonHandler;
+    private final ButtonHandler orderItemButtonHandler;
 
     @Inject
     public ButtonOrchestrator(
         @Named("keyMenuButtonHandler") ButtonHandler keyMenuButtonHandler,
         @Named("orderMenuButtonHandler") ButtonHandler orderMenuButtonHandler,
-        @Named("keyItemButtonHandler") ButtonHandler keyItemButtonHandler
+        @Named("keyItemButtonHandler") ButtonHandler keyItemButtonHandler,
+        @Named("orderItemButtonHandler") ButtonHandler orderItemButtonHandler
     ) {
         this.mainMenuButtonHandler = new MainMenuButtonHandler();
         this.keyMenuButtonHandler = keyMenuButtonHandler;
         this.orderMenuButtonHandler = orderMenuButtonHandler;
         this.keyItemButtonHandler = keyItemButtonHandler;
+        this.orderItemButtonHandler = orderItemButtonHandler;
     }
 
     @Override
     public Response orchestrate(CallbackQuery query) {
 
-        if (isKeyItemToRemove(query.getData())) {
+        var data = query.getData();
+
+        if (isKeyItemToRemove(data)) {
             return keyItemButtonHandler.handle(query);
         }
 
-        var keyboard = Keyboard.fromButtonData(query.getData());
+        if (isOrderItemToRemove(data)) {
+            return orderItemButtonHandler.handle(query);
+        }
+
+        var keyboard = Keyboard.fromButtonData(data);
 
         return switch (keyboard) {
             case MAIN -> mainMenuButtonHandler.handle(query);
@@ -49,6 +58,10 @@ public class ButtonOrchestrator implements Orchestrator<CallbackQuery> {
     }
 
     private static boolean isKeyItemToRemove(String input) {
-        return input.startsWith(KeyboardMarkups.KEY_REMOVAL_PREFIX);
+        return input.startsWith(ItemRemovalPrefixes.KEY);
+    }
+
+    private static boolean isOrderItemToRemove(String input) {
+        return input.startsWith(ItemRemovalPrefixes.ORDER);
     }
 }

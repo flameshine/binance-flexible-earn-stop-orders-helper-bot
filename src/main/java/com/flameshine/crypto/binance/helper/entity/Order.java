@@ -28,13 +28,13 @@ public class Order extends PanacheEntity {
 
     // TODO: replace the field below with some Binance-provided enum if possible
 
-    @Column(name = "base", unique = true, nullable = false)
+    @Column(name = "base", nullable = false)
     private String base;
 
-    @Column(name = "quote", unique = true, nullable = false)
+    @Column(name = "quote", nullable = false)
     private String quote;
 
-    @Column(name = "target", unique = true, nullable = false)
+    @Column(name = "target", nullable = false)
     private BigDecimal target;
 
     @ManyToOne
