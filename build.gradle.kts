@@ -2,6 +2,7 @@ val quarkusPlatformGroupId: String by project
 val quarkusPlatformArtifactId: String by project
 val quarkusPlatformVersion: String by project
 val telegramBotApiVersion: String by project
+val binanceConnectorVersion: String by project
 val lombokVersion: String by project
 val jaxbApiVersion: String by project
 
@@ -29,6 +30,7 @@ dependencies {
     implementation("io.quarkus:quarkus-hibernate-orm-panache")
     implementation("io.quarkus:quarkus-jdbc-mysql")
     implementation("org.telegram:telegrambots:$telegramBotApiVersion")
+    implementation("io.github.binance:binance-connector-java:$binanceConnectorVersion")
     compileOnly("org.projectlombok:lombok:$lombokVersion")
     annotationProcessor("org.projectlombok:lombok:$lombokVersion")
     runtimeOnly("javax.xml.bind:jaxb-api:$jaxbApiVersion") // required by Quarkus
