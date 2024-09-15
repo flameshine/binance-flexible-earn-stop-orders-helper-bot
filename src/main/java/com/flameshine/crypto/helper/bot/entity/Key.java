@@ -1,6 +1,7 @@
 package com.flameshine.crypto.helper.bot.entity;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
@@ -39,8 +40,8 @@ public class Key extends PanacheEntity {
     @OneToMany(mappedBy = "key")
     private Set<Order> orders;
 
-    public static Key findByLabel(String label) {
-        return find("label", label).firstResult();
+    public static Optional<Key> findByLabelOptional(String label) {
+        return find("label", label).firstResultOptional();
     }
 
     public static List<Key> findAllByTelegramUserId(Long telegramUserId) {

@@ -9,6 +9,7 @@ public class OrderMapper {
 
     public static Order map(com.flameshine.crypto.helper.bot.entity.Order order) {
         return new Order(
+            order.id,
             order.getKey().getTelegramUserId(),
             order.getBase(),
             order.getQuote(),

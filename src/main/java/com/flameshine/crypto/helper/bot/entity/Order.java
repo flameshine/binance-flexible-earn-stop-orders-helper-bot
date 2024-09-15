@@ -2,6 +2,7 @@ package com.flameshine.crypto.helper.bot.entity;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import jakarta.persistence.Column;
@@ -26,8 +27,6 @@ import lombok.ToString;
 @ToString(callSuper = true)
 public class Order extends PanacheEntity {
 
-    // TODO: replace fields below with some Binance-provided enum if possible
-
     @Column(name = "base", nullable = false)
     private String base;
 
@@ -40,6 +39,10 @@ public class Order extends PanacheEntity {
     @ManyToOne
     @JoinColumn(name = "key_id", nullable = false)
     private Key key;
+
+    public static Optional<Order> findByIdOptional(Long id) {
+        return find("id", id).firstResultOptional();
+    }
 
     public static List<Order> findAllByKeys(List<Key> keys) {
         return find("key in ?1", keys).list();

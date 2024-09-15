@@ -12,7 +12,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 import com.flameshine.crypto.helper.api.mapper.OrderMapper;
-import com.flameshine.crypto.helper.binance.BinanceOrderPriceStreamer;
+import com.flameshine.crypto.helper.binance.stream.impl.BinanceTradeDataStreamerImpl;
 import com.flameshine.crypto.helper.bot.entity.Key;
 import com.flameshine.crypto.helper.bot.entity.Order;
 import com.flameshine.crypto.helper.bot.enums.UserState;
@@ -24,13 +24,13 @@ import com.flameshine.crypto.helper.bot.util.Messages;
 @Named("orderDetailsMessageHandler")
 public class OrderDetailsMessageHandler implements MessageHandler {
 
-    private static final Pattern ORDER_DETAILS_PATTERN = Pattern.compile("(^\\w+):\\s([A-Z]+)/([A-Z]+)\\s-\\s(\\d+)$");
+    private static final Pattern ORDER_DETAILS_PATTERN = Pattern.compile("(^\\w+):\\s([A-Z]+)/([A-Z]+)\\s-\\s(\\d+\\.?\\d*)$");
 
-    private final BinanceOrderPriceStreamer binanceOrderPriceStreamer;
+    private final BinanceTradeDataStreamerImpl binanceTradeDataStreamer;
 
     @Inject
-    public OrderDetailsMessageHandler(BinanceOrderPriceStreamer binanceOrderPriceStreamer) {
-        this.binanceOrderPriceStreamer = binanceOrderPriceStreamer;
+    public OrderDetailsMessageHandler(BinanceTradeDataStreamerImpl binanceTradeDataStreamer) {
+        this.binanceTradeDataStreamer = binanceTradeDataStreamer;
     }
 
     @Override
@@ -54,9 +54,9 @@ public class OrderDetailsMessageHandler implements MessageHandler {
             );
         }
 
-        var key = Key.findByLabel(matcher.group(1));
+        var optionalKey = Key.findByLabelOptional(matcher.group(1));
 
-        if (key == null) {
+        if (optionalKey.isEmpty()) {
 
             var sendMessage = sendMessageBuilder
                 .text(Messages.UNRECOGNIZED_KEY)
@@ -72,12 +72,12 @@ public class OrderDetailsMessageHandler implements MessageHandler {
             .base(matcher.group(2))
             .quote(matcher.group(3))
             .target(new BigDecimal(matcher.group(4)))
-            .key(key)
+            .key(optionalKey.get())
             .build();
 
         order.persist();
 
-        binanceOrderPriceStreamer.monitorOrder(
+        binanceTradeDataStreamer.stream(
             OrderMapper.map(order)
         );
 

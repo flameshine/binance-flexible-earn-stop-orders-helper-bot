@@ -7,9 +7,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import jakarta.transaction.Transactional;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -18,6 +20,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import com.flameshine.crypto.helper.api.PriceTargetListener;
 import com.flameshine.crypto.helper.bot.config.BotConfig;
+import com.flameshine.crypto.helper.bot.entity.Order;
 import com.flameshine.crypto.helper.bot.enums.Command;
 import com.flameshine.crypto.helper.bot.enums.UserState;
 import com.flameshine.crypto.helper.bot.handler.message.MessageHandler;
@@ -25,6 +28,7 @@ import com.flameshine.crypto.helper.bot.handler.message.impl.UnrecognizedMessage
 import com.flameshine.crypto.helper.bot.model.Response;
 import com.flameshine.crypto.helper.bot.orchestrator.Orchestrator;
 import com.flameshine.crypto.helper.bot.orchestrator.impl.CommandOrchestrator;
+import com.flameshine.crypto.helper.bot.util.Messages;
 
 // TODO: review language options
 
@@ -76,9 +80,25 @@ public class BinanceFlexibleEarnStopLimitsHelperBot extends TelegramLongPollingB
         return username;
     }
 
-    @Override
-    public void onPriceReached() {
+    // TODO: redeem assets from Flexible Earn and execute actual orders
 
+    @Override
+    @Transactional
+    public void onPriceReached(Long orderId) {
+
+        var order = Order.findByIdOptional(orderId);
+
+        order.ifPresent(o -> {
+
+            o.delete();
+
+            var sendMessage = SendMessage.builder()
+                .chatId(o.getKey().getTelegramUserId())
+                .text(Messages.orderExecution(o))
+                .build();
+
+            executeMethod(sendMessage);
+        });
     }
 
     private Response handleButtonTap(CallbackQuery query) {

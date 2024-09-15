@@ -2,6 +2,8 @@ package com.flameshine.crypto.helper.bot.util;
 
 import lombok.experimental.UtilityClass;
 
+import com.flameshine.crypto.helper.bot.entity.Order;
+
 // TODO: complete messages
 // TODO: consider grouping
 
@@ -112,6 +114,15 @@ public class Messages {
 
     public static String orderCreationTradingPair() {
         return escapeMarkdown(ORDER_CREATION_TRADING_PAIR);
+    }
+
+    public static String orderExecution(Order order) {
+        return String.format(
+            "Your order '%s/%s - %s' was executed successfully!",
+            order.getBase(),
+            order.getQuote(),
+            order.getTarget()
+        );
     }
 
     private static String escapeMarkdown(String input) {
