@@ -4,8 +4,6 @@ import java.math.BigDecimal;
 
 public record Order(
     Long id,
-    Long userId,
-    String base,
-    String quote,
+    String pair,
     BigDecimal target
 ) {}

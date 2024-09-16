@@ -12,7 +12,6 @@ import com.flameshine.crypto.helper.bot.util.KeyboardMarkups;
 public enum Keyboard {
 
     MAIN(KeyboardMarkups.mainMenu()),
-    KEY(KeyboardMarkups.keyMenu()),
     ORDER(KeyboardMarkups.orderMenu());
 
     private final InlineKeyboardMarkup markup;

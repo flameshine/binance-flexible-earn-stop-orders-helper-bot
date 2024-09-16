@@ -31,6 +31,8 @@ import com.flameshine.crypto.helper.bot.orchestrator.impl.CommandOrchestrator;
 import com.flameshine.crypto.helper.bot.util.Messages;
 
 // TODO: review language options
+// TODO: enforce at least one API to be connected
+// TODO: redeem assets from Flexible Earn and execute actual orders
 
 @ApplicationScoped
 public class BinanceFlexibleEarnStopLimitsHelperBot extends TelegramLongPollingBot implements PriceTargetListener {
@@ -79,8 +81,6 @@ public class BinanceFlexibleEarnStopLimitsHelperBot extends TelegramLongPollingB
     public String getBotUsername() {
         return username;
     }
-
-    // TODO: redeem assets from Flexible Earn and execute actual orders
 
     @Override
     @Transactional

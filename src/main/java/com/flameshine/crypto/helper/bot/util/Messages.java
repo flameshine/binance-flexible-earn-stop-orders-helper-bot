@@ -10,13 +10,11 @@ import com.flameshine.crypto.helper.bot.entity.Order;
 @UtilityClass
 public class Messages {
 
+    public static final String KEY_SETUP = "Please share your newly created API key: ";
     public static final String MAIN_MENU = "Please use the menu below to navigate the bot's functionality.";
-    public static final String KEY_MENU = "In this section you can manage your Binance API keys added.";
     public static final String ORDER_MENU = "In this section you can configure stop-limit orders for the selected Binance key.";
     public static final String KEY_SETUP_SUCCESS = "Your API key was added successfully!";
-    public static final String KEY_SETUP_FAILURE = "Sorry, your message format seems incorrect. Please try again: ";
-    public static final String KEY_LIST = "Your API keys: ";
-    public static final String KEY_REMOVAL_SUCCESS = "Your key was removed successfully.";
+    public static final String KEY_SETUP_FAILURE = "Sorry, your API key looks incorrect. Please try again: ";
     public static final String ORDER_CREATION_FAILURE = "Sorry, your order format seems incorrect. Please try again: ";
     public static final String ORDER_CREATION_SUCCESS = "Stop-limit order was created successfully!";
     public static final String EMPTY_ORDER_LIST = "It looks like you haven't added any orders yet.";
@@ -46,29 +44,28 @@ public class Messages {
         For further assistance, please contact @flameshiner.
         """;
 
-    public static final String EMPTY_KEY_LIST = """
-        You haven't added any API keys yet.
-        To learn how, use the /start command.
+    public static final String MISSING_KEY = """
+        It looks like you haven't connected your Binance API key yet.
+        Please use the /start command for the instructions.
         """;
 
-    public static final String UNRECOGNIZED_KEY = """
-        API key not recognized.
-        Please try again or add one if you haven't done so already.
-        """;
-
-    public static final String KEY_REMOVAL = """
-        Please select the key you'd like to remove.
-        Your stop-limit orders will be cancelled automatically.
+    public static final String DISCONNECT_SUCCESS = """
+        Your API key was disconnected.
+        Call /start if you want to set up a new one.
         """;
 
     private static final String ORDER_CREATION_TRADING_PAIR = """
         Please specify the order details in the following format:
-        
-        `<key name>: <base/quote> - <price>`
+
+        `<action>: <base/quote> - <price>`
+
+        Action: Use "b" for buy or "s" for sell.
+        Base/quote: The trading pair (e.g., BNB/USDT).
+        Price: The target price for the order.
         
         Example:
-        
-        `key1: BNB/USDT - 465`
+
+        `b: BNB/USDT - 465`
         """;
 
     private static final String GREETING = """
@@ -90,16 +87,6 @@ public class Messages {
         Thank you for your support!
         """;
 
-    private static final String KEY_SETUP = """
-        Please share your Binance API key using the following format:
-        
-        `<name> - <value>`
-        
-        Example:
-        
-        `key1 - ECN38H48Su5TdxxV4YO9CeXy`
-        """;
-
     public static String greeting() {
         return escapeMarkdown(GREETING);
     }
@@ -108,24 +95,21 @@ public class Messages {
         return escapeMarkdown(SUPPORT_DETAILS);
     }
 
-    public static String keySetup() {
-        return escapeMarkdown(KEY_SETUP);
-    }
-
     public static String orderCreationTradingPair() {
         return escapeMarkdown(ORDER_CREATION_TRADING_PAIR);
     }
 
     public static String orderExecution(Order order) {
         return String.format(
-            "Your order '%s/%s - %s' was executed successfully!",
+            "Your %s/%s %s order for price %s was executed successfully!",
             order.getBase(),
             order.getQuote(),
+            order.getType(),
             order.getTarget()
         );
     }
 
     private static String escapeMarkdown(String input) {
-        return input.replaceAll("(?=[.<>\\-])", "\\\\");
+        return input.replaceAll("(?=[.<>!()\\-])", "\\\\");
     }
 }

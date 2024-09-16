@@ -1,4 +1,4 @@
-package com.flameshine.crypto.helper.bot.handler.button.impl.key;
+package com.flameshine.crypto.helper.bot.handler.button.impl.main;
 
 import java.util.List;
 
@@ -15,8 +15,8 @@ import com.flameshine.crypto.helper.bot.model.Response;
 import com.flameshine.crypto.helper.bot.util.Messages;
 
 @ApplicationScoped
-@Named("keyItemButtonHandler")
-public class KeyItemButtonHandler implements ButtonHandler {
+@Named("disconnectButtonHandler")
+public class DisconnectButtonHandler implements ButtonHandler {
 
     @Override
     @Transactional
@@ -25,14 +25,14 @@ public class KeyItemButtonHandler implements ButtonHandler {
         var sendMessageBuilder = SendMessage.builder()
             .chatId(query.getMessage().getChatId());
 
-        var key = Key.findByIdOptional(
-            extractKeyId(query.getData())
+        var key = Key.findByTelegramUserIdOptional(
+            query.getFrom().getId()
         );
 
         if (key.isEmpty()) {
 
             var sendMessage = sendMessageBuilder
-                .text(Messages.UNRECOGNIZED_KEY)
+                .text(Messages.MISSING_KEY)
                 .build();
 
             return new Response(
@@ -43,19 +43,11 @@ public class KeyItemButtonHandler implements ButtonHandler {
         key.ifPresent(PanacheEntityBase::delete);
 
         var sendMessage = sendMessageBuilder
-            .text(Messages.KEY_REMOVAL_SUCCESS)
+            .text(Messages.DISCONNECT_SUCCESS)
             .build();
 
         return new Response(
             List.of(sendMessage)
         );
-    }
-
-    private static Long extractKeyId(String input) {
-        try {
-            return Long.parseLong(input.split("#")[1]);
-        } catch (NumberFormatException e) {
-            throw new IllegalStateException(e);
-        }
     }
 }

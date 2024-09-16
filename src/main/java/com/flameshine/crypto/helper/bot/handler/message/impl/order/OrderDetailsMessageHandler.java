@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import com.google.common.base.Preconditions;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
@@ -24,7 +25,7 @@ import com.flameshine.crypto.helper.bot.util.Messages;
 @Named("orderDetailsMessageHandler")
 public class OrderDetailsMessageHandler implements MessageHandler {
 
-    private static final Pattern ORDER_DETAILS_PATTERN = Pattern.compile("(^\\w+):\\s([A-Z]+)/([A-Z]+)\\s-\\s(\\d+\\.?\\d*)$");
+    private static final Pattern ORDER_DETAILS_PATTERN = Pattern.compile("(^[bs]):\\s([A-Z]+)/([A-Z]+)\\s-\\s(\\d+\\.?\\d*)$");
 
     private final BinanceTradeDataStreamerImpl binanceTradeDataStreamer;
 
@@ -54,24 +55,17 @@ public class OrderDetailsMessageHandler implements MessageHandler {
             );
         }
 
-        var optionalKey = Key.findByLabelOptional(matcher.group(1));
+        var optionalKey = Key.findByTelegramUserIdOptional(
+            message.getFrom().getId()
+        );
 
-        if (optionalKey.isEmpty()) {
-
-            var sendMessage = sendMessageBuilder
-                .text(Messages.UNRECOGNIZED_KEY)
-                .build();
-
-            return new Response(
-                List.of(sendMessage),
-                UserState.WAITING_FOR_ORDER_DETAILS
-            );
-        }
+        Preconditions.checkState(optionalKey.isPresent(), "An API key should be connected at this stage");
 
         var order = Order.builder()
             .base(matcher.group(2))
             .quote(matcher.group(3))
             .target(new BigDecimal(matcher.group(4)))
+            .type(Order.Type.fromValue(matcher.group(1)))
             .key(optionalKey.get())
             .build();
 

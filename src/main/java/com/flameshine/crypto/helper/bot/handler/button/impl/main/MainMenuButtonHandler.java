@@ -2,6 +2,9 @@ package com.flameshine.crypto.helper.bot.handler.button.impl.main;
 
 import java.util.List;
 
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
@@ -13,12 +16,19 @@ import com.flameshine.crypto.helper.bot.handler.button.ButtonHandler;
 import com.flameshine.crypto.helper.bot.model.Response;
 import com.flameshine.crypto.helper.bot.util.Messages;
 
+@ApplicationScoped
+@Named("mainMenuButtonHandler")
 public class MainMenuButtonHandler implements ButtonHandler {
 
     private final ButtonHandler supportButtonHandler;
+    private final ButtonHandler disconnectButtonHandler;
 
-    public MainMenuButtonHandler() {
+    @Inject
+    public MainMenuButtonHandler(
+        @Named("disconnectButtonHandler") ButtonHandler disconnectButtonHandler
+    ) {
         this.supportButtonHandler = new SupportButtonHandler();
+        this.disconnectButtonHandler = disconnectButtonHandler;
     }
 
     @Override
@@ -41,11 +51,6 @@ public class MainMenuButtonHandler implements ButtonHandler {
 
         switch (buttonData) {
 
-            case KEYS -> {
-                text.setText(Messages.KEY_MENU);
-                markup.setReplyMarkup(Keyboard.KEY.getMarkup());
-            }
-
             case ORDERS -> {
                 text.setText(Messages.ORDER_MENU);
                 markup.setReplyMarkup(Keyboard.ORDER.getMarkup());
@@ -53,6 +58,10 @@ public class MainMenuButtonHandler implements ButtonHandler {
 
             case SUPPORT -> {
                 return supportButtonHandler.handle(query);
+            }
+
+            case DISCONNECT -> {
+                return disconnectButtonHandler.handle(query);
             }
         }
 

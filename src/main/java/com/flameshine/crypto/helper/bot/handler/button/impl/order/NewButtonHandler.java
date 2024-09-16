@@ -16,6 +16,8 @@ class NewButtonHandler implements ButtonHandler {
     @Override
     public Response handle(CallbackQuery query) {
 
+        // TODO: check if user has key connected
+
         var sendMessage = SendMessage.builder()
             .chatId(query.getMessage().getChatId())
             .text(Messages.orderCreationTradingPair())

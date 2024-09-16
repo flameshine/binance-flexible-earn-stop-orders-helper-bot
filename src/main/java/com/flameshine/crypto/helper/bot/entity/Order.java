@@ -36,6 +36,9 @@ public class Order extends PanacheEntity {
     @Column(name = "target", nullable = false)
     private BigDecimal target;
 
+    @Column(name = "type", nullable = false)
+    private Type type;
+
     @ManyToOne
     @JoinColumn(name = "key_id", nullable = false)
     private Key key;
@@ -46,5 +49,27 @@ public class Order extends PanacheEntity {
 
     public static List<Order> findAllByKeys(List<Key> keys) {
         return find("key in ?1", keys).list();
+    }
+
+    public enum Type {
+
+        BUY,
+        SELL;
+
+        public static Type fromValue(String value) {
+
+            for (var item : values()) {
+                if (item.name().substring(0, 1).equalsIgnoreCase(value)) {
+                    return item;
+                }
+            }
+
+            throw new IllegalArgumentException("Invalid order type: " + value);
+        }
+
+        @Override
+        public String toString() {
+            return name().toLowerCase();
+        }
     }
 }

@@ -1,7 +1,6 @@
 package com.flameshine.crypto.helper.bot.handler.message.impl.key;
 
 import java.util.List;
-import java.util.regex.Pattern;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Named;
@@ -19,8 +18,6 @@ import com.flameshine.crypto.helper.bot.util.Messages;
 @Named("apiKeyMessageHandler")
 public class KeySetupMessageHandler implements MessageHandler {
 
-    private static final Pattern API_KEY_PATTERN = Pattern.compile("(\\S+)\\s*-\\s*(\\S+)");
-
     @Override
     @Transactional
     public Response handle(Message message) {
@@ -28,9 +25,7 @@ public class KeySetupMessageHandler implements MessageHandler {
         var sendMessageBuilder = SendMessage.builder()
             .chatId(message.getChatId());
 
-        var matcher = API_KEY_PATTERN.matcher(message.getText());
-
-        if (!matcher.matches()) {
+        if (message.getText().isBlank()) {
 
             var sendMessage = sendMessageBuilder
                 .text(Messages.KEY_SETUP_FAILURE)
@@ -44,8 +39,7 @@ public class KeySetupMessageHandler implements MessageHandler {
 
         var key = Key.builder()
             .telegramUserId(message.getFrom().getId())
-            .label(matcher.group(1))
-            .value(matcher.group(2))
+            .value(message.getText())
             .build();
 
         key.persist();

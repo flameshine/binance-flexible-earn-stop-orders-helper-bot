@@ -1,7 +1,6 @@
 package com.flameshine.crypto.helper.binance.stream.impl;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -25,7 +24,7 @@ public class BinanceTradeDataStreamerImpl implements BinanceTradeDataStreamer {
 
     private final PriceTargetListener listener;
     private final WebSocketStreamClient client;
-    private final Map<Long, Map<Long, Integer>> streamedUserOrders;
+    private final Map<Long, Integer> streamedOrders;
 
     @Inject
     public BinanceTradeDataStreamerImpl(
@@ -34,19 +33,17 @@ public class BinanceTradeDataStreamerImpl implements BinanceTradeDataStreamer {
     ) {
         this.listener = listener;
         this.client = new WebSocketStreamClientImpl(config.baseUrl());
-        this.streamedUserOrders = new ConcurrentHashMap<>();
+        this.streamedOrders = new ConcurrentHashMap<>();
     }
 
     @Override
     public void stream(Order order) {
 
-        var tradingPairKey = order.base() + order.quote();
-
         var streamId = client.tradeStream(
-            tradingPairKey,
+            order.pair(),
             event -> {
 
-                log.debug("Received event: {}", event);
+                log.info("Received event: {}", event);
 
                 var price = extractPrice(event);
 
@@ -57,30 +54,24 @@ public class BinanceTradeDataStreamerImpl implements BinanceTradeDataStreamer {
             }
         );
 
-        streamedUserOrders.putIfAbsent(order.userId(), new HashMap<>());
-
-        streamedUserOrders.get(order.userId())
-            .put(order.id(), streamId);
+        streamedOrders.putIfAbsent(order.id(), streamId);
     }
 
     private void remove(Order order) {
 
         var orderId = order.id();
-        var userId = order.userId();
 
-        if (!streamedUserOrders.containsKey(userId) || !streamedUserOrders.get(userId).containsKey(orderId)) {
+        if (!streamedOrders.containsKey(orderId)) {
             return;
         }
 
-        var streamId = streamedUserOrders.get(userId)
-            .get(orderId);
+        var streamId = streamedOrders.get(orderId);
 
-        log.info("Closing stream for order with id {}", orderId);
+        log.debug("Closing stream for order with id {}", orderId);
 
         client.closeConnection(streamId);
 
-        streamedUserOrders.get(userId)
-            .remove(orderId);
+        streamedOrders.remove(orderId);
     }
 
     // TODO: handle potential errors

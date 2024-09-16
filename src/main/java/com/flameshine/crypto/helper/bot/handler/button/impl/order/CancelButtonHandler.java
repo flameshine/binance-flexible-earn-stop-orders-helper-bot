@@ -28,6 +28,9 @@ class CancelButtonHandler implements ButtonHandler {
 
         var message = query.getMessage();
         var chatId = message.getChatId();
+
+        // TODO: review this logic, it should cancel order only for one user
+
         var keys = Key.findAllByTelegramUserId(query.getFrom().getId());
         var orders = Order.findAllByKeys(keys);
 

@@ -3,6 +3,7 @@ val quarkusPlatformArtifactId: String by project
 val quarkusPlatformVersion: String by project
 val telegramBotApiVersion: String by project
 val binanceConnectorVersion: String by project
+val guavaVersion: String by project
 val lombokVersion: String by project
 val jaxbApiVersion: String by project
 
@@ -31,6 +32,7 @@ dependencies {
     implementation("io.quarkus:quarkus-jdbc-mysql")
     implementation("org.telegram:telegrambots:$telegramBotApiVersion")
     implementation("io.github.binance:binance-connector-java:$binanceConnectorVersion")
+    implementation("com.google.guava:guava:$guavaVersion")
     compileOnly("org.projectlombok:lombok:$lombokVersion")
     annotationProcessor("org.projectlombok:lombok:$lombokVersion")
     runtimeOnly("javax.xml.bind:jaxb-api:$jaxbApiVersion") // required by Quarkus

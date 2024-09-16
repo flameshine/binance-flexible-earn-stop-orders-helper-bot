@@ -29,9 +29,6 @@ public class Key extends PanacheEntity {
     @Column(name = "telegram_user_id", nullable = false)
     private Long telegramUserId;
 
-    @Column(name = "label", unique = true, nullable = false)
-    private String label;
-
     // TODO: encrypt/secure the field below
 
     @Column(name = "value", unique = true, nullable = false)
@@ -40,8 +37,8 @@ public class Key extends PanacheEntity {
     @OneToMany(mappedBy = "key")
     private Set<Order> orders;
 
-    public static Optional<Key> findByLabelOptional(String label) {
-        return find("label", label).firstResultOptional();
+    public static Optional<Key> findByTelegramUserIdOptional(Long telegramUserId) {
+        return find("telegramUserId", telegramUserId).firstResultOptional();
     }
 
     public static List<Key> findAllByTelegramUserId(Long telegramUserId) {

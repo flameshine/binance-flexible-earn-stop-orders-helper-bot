@@ -2,7 +2,7 @@ package com.flameshine.crypto.helper.bot.enums;
 
 public enum MainMenuButton {
 
-    KEYS,
+    DISCONNECT,
     ORDERS,
     HELP,
     SUPPORT;
