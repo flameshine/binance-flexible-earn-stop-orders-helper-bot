@@ -59,9 +59,9 @@ public class Messages {
 
         `<action>: <base/quote> - <price>`
 
-        Action: Use "b" for buy or "s" for sell.
-        Base/quote: The trading pair (e.g., BNB/USDT).
-        Price: The target price for the order.
+        Action: Use "b" for buy or "s" for sell
+        Base/quote: The trading pair details
+        Price: The target price for the order
         
         Example:
 
@@ -101,15 +101,15 @@ public class Messages {
 
     public static String orderExecution(Order order) {
         return String.format(
-            "Your %s/%s %s order for price %s was executed successfully!",
+            "Your %s order for %s/%s at a price of %s has been executed successfully!",
+            order.getType(),
             order.getBase(),
             order.getQuote(),
-            order.getType(),
             order.getTarget()
         );
     }
 
     private static String escapeMarkdown(String input) {
-        return input.replaceAll("(?=[.<>!()\\-])", "\\\\");
+        return input.replaceAll("(?=[.<>!\\-])", "\\\\");
     }
 }

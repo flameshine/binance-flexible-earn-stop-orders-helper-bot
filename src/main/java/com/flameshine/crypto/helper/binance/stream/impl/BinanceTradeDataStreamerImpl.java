@@ -47,7 +47,7 @@ public class BinanceTradeDataStreamerImpl implements BinanceTradeDataStreamer {
 
                 var price = extractPrice(event);
 
-                if (order.target().compareTo(price) <= 0) {
+                if (order.target().compareTo(price) >= 0) {
                     listener.onPriceReached(order.id());
                     remove(order);
                 }
