@@ -8,14 +8,9 @@ import com.flameshine.crypto.helper.binance.model.Order;
 public class OrderMapper {
 
     public static Order map(com.flameshine.crypto.helper.bot.entity.Order order) {
-
-        var pair = com.flameshine.crypto.helper.bot.entity.Order.Type.BUY == order.getType()
-            ? order.getBase() + order.getQuote()
-            : order.getQuote() + order.getBase();
-
         return new Order(
             order.id,
-            pair,
+            order.getBase() + order.getQuote(),
             order.getTarget()
         );
     }

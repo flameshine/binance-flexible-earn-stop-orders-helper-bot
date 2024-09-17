@@ -1,1 +1,2 @@
 application.properties filter=git-crypt diff=git-crypt
+import.sql filter=git-crypt diff=git-crypt

@@ -43,7 +43,7 @@ public class BinanceTradeDataStreamerImpl implements BinanceTradeDataStreamer {
             order.pair(),
             event -> {
 
-                log.info("Received event: {}", event);
+                log.debug("Received event: {}", event);
 
                 var price = extractPrice(event);
 
