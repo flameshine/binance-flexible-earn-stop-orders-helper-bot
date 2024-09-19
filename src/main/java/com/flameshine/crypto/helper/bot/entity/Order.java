@@ -35,8 +35,11 @@ public class Order extends PanacheEntity {
     @Column(name = "quote", nullable = false)
     private String quote;
 
-    @Column(name = "target", nullable = false)
-    private BigDecimal target;
+    @Column(name = "price", nullable = false)
+    private BigDecimal price;
+
+    @Column(name = "amount", nullable = false)
+    private BigDecimal amount;
 
     @Column(name = "type", nullable = false)
     @Enumerated(EnumType.STRING)

@@ -57,15 +57,16 @@ public class Messages {
     private static final String ORDER_CREATION_TRADING_PAIR = """
         Please specify the order details in the following format:
 
-        `<action>: <base/quote> - <price>`
+        `<action>: <amount> <base/quote> - <price>`
 
         Action: Use "b" for buy or "s" for sell
+        Amount: Number of coins to buy
         Base/quote: The trading pair details
         Price: The target price for the order
         
         Example:
 
-        `b: BNB/USDT - 465`
+        `b: 5 BNB/USDT - 465`
         """;
 
     private static final String GREETING = """
@@ -99,13 +100,23 @@ public class Messages {
         return escapeMarkdown(ORDER_CREATION_TRADING_PAIR);
     }
 
-    public static String orderExecution(Order order) {
+    public static String orderExecutionSuccess(Order order) {
         return String.format(
-            "Your %s order for %s/%s at a price of %s has been executed successfully!",
+            "Your %s order for %s %s at a price of %s has been executed successfully!",
             order.getType(),
+            order.getAmount(),
             order.getBase(),
-            order.getQuote(),
-            order.getTarget()
+            order.getPrice()
+        );
+    }
+
+    public static String orderExecutionFailure(Order order) {
+        return String.format(
+            "Unable to execute your %s order for %s %s at a price of %s. Please check if you have sufficient assets available.",
+            order.getType(),
+            order.getAmount(),
+            order.getBase(),
+            order.getPrice()
         );
     }
 

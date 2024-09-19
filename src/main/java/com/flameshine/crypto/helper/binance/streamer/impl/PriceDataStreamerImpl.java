@@ -1,4 +1,4 @@
-package com.flameshine.crypto.helper.binance.stream.impl;
+package com.flameshine.crypto.helper.binance.streamer.impl;
 
 import java.math.BigDecimal;
 import java.util.Map;
@@ -12,54 +12,54 @@ import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 
 import com.flameshine.crypto.helper.api.PriceTargetListener;
-import com.flameshine.crypto.helper.binance.config.BinanceDataStreamConfig;
-import com.flameshine.crypto.helper.binance.model.Order;
-import com.flameshine.crypto.helper.binance.stream.BinanceTradeDataStreamer;
+import com.flameshine.crypto.helper.binance.config.ApiConfig;
+import com.flameshine.crypto.helper.binance.model.PriceAlert;
+import com.flameshine.crypto.helper.binance.streamer.PriceDataStreamer;
 
 // TODO: load all orders from the database on startup
 
 @ApplicationScoped
 @Slf4j
-public class BinanceTradeDataStreamerImpl implements BinanceTradeDataStreamer {
+public class PriceDataStreamerImpl implements PriceDataStreamer {
 
     private final PriceTargetListener listener;
     private final WebSocketStreamClient client;
     private final Map<Long, Integer> streamedOrders;
 
     @Inject
-    public BinanceTradeDataStreamerImpl(
+    public PriceDataStreamerImpl(
         PriceTargetListener listener,
-        BinanceDataStreamConfig config
+        ApiConfig config
     ) {
         this.listener = listener;
-        this.client = new WebSocketStreamClientImpl(config.baseUrl());
+        this.client = new WebSocketStreamClientImpl(config.streamUrl());
         this.streamedOrders = new ConcurrentHashMap<>();
     }
 
     @Override
-    public void stream(Order order) {
+    public void stream(PriceAlert priceAlert) {
 
         var streamId = client.tradeStream(
-            order.pair(),
+            priceAlert.pair(),
             event -> {
 
                 log.debug("Received event: {}", event);
 
                 var price = extractPrice(event);
 
-                if (order.target().compareTo(price) >= 0) {
-                    listener.onPriceReached(order.id());
-                    remove(order);
+                if (priceAlert.target().compareTo(price) >= 0) {
+                    listener.onPriceReached(priceAlert.id());
+                    remove(priceAlert);
                 }
             }
         );
 
-        streamedOrders.putIfAbsent(order.id(), streamId);
+        streamedOrders.putIfAbsent(priceAlert.id(), streamId);
     }
 
-    private void remove(Order order) {
+    private void remove(PriceAlert priceAlert) {
 
-        var orderId = order.id();
+        var orderId = priceAlert.id();
 
         if (!streamedOrders.containsKey(orderId)) {
             return;

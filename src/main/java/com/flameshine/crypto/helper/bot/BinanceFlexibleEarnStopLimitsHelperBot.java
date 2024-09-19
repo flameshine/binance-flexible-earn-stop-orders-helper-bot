@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.google.common.base.Preconditions;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
@@ -19,6 +20,8 @@ import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import com.flameshine.crypto.helper.api.PriceTargetListener;
+import com.flameshine.crypto.helper.api.mapper.RedeemFlexibleProductRequestMapper;
+import com.flameshine.crypto.helper.binance.earn.FlexibleEarnClient;
 import com.flameshine.crypto.helper.bot.config.BotConfig;
 import com.flameshine.crypto.helper.bot.entity.Order;
 import com.flameshine.crypto.helper.bot.enums.Command;
@@ -31,8 +34,9 @@ import com.flameshine.crypto.helper.bot.orchestrator.impl.CommandOrchestrator;
 import com.flameshine.crypto.helper.bot.util.Messages;
 
 // TODO: review language options
-// TODO: enforce at least one API to be connected
-// TODO: redeem assets from Flexible Earn and execute actual orders
+// TODO: enforce at least one API key to be connected
+// TODO: execute actual orders
+// TODO: investigate if it makes sense to redeem assets slightly earlier than the target price is reached
 
 @ApplicationScoped
 public class BinanceFlexibleEarnStopLimitsHelperBot extends TelegramLongPollingBot implements PriceTargetListener {
@@ -44,6 +48,7 @@ public class BinanceFlexibleEarnStopLimitsHelperBot extends TelegramLongPollingB
     private final MessageHandler apiKeyMessageHandler;
     private final MessageHandler orderDetailsMessageHandler;
     private final MessageHandler unrecognizedMessageHandler;
+    private final FlexibleEarnClient flexibleEarnClient;
     private final String username;
 
     @Inject
@@ -51,6 +56,7 @@ public class BinanceFlexibleEarnStopLimitsHelperBot extends TelegramLongPollingB
         Orchestrator<CallbackQuery> buttonOrchestrator,
         @Named("apiKeyMessageHandler") MessageHandler apiKeyMessageHandler,
         @Named("orderDetailsMessageHandler") MessageHandler orderDetailsMessageHandler,
+        FlexibleEarnClient flexibleEarnClient,
         BotConfig config
     ) {
         super(config.token());
@@ -59,6 +65,7 @@ public class BinanceFlexibleEarnStopLimitsHelperBot extends TelegramLongPollingB
         this.apiKeyMessageHandler = apiKeyMessageHandler;
         this.orderDetailsMessageHandler = orderDetailsMessageHandler;
         this.unrecognizedMessageHandler = new UnrecognizedMessageHandler();
+        this.flexibleEarnClient = flexibleEarnClient;
         this.username = config.username();
         registerCommands();
     }
@@ -82,23 +89,36 @@ public class BinanceFlexibleEarnStopLimitsHelperBot extends TelegramLongPollingB
         return username;
     }
 
+    // TODO: move to a separate place
+    // TODO: implement actual purchase logic
+    // TODO: review this
+
     @Override
     @Transactional
     public void onPriceReached(Long orderId) {
 
-        var order = Order.findByIdOptional(orderId);
+        var orderOptional = Order.findByIdOptional(orderId);
 
-        order.ifPresent(o -> {
+        Preconditions.checkState(orderOptional.isPresent(), "Order must be present at this stage");
 
-            o.delete();
+        var order = orderOptional.get();
 
-            var sendMessage = SendMessage.builder()
-                .chatId(o.getKey().getTelegramUserId())
-                .text(Messages.orderExecution(o))
-                .build();
+        order.delete();
 
-            executeMethod(sendMessage);
-        });
+        var isRedeemSuccessful = flexibleEarnClient.redeem(
+            RedeemFlexibleProductRequestMapper.map(order)
+        );
+
+        var text = isRedeemSuccessful
+            ? Messages.orderExecutionSuccess(order)
+            : Messages.orderExecutionFailure(order);
+
+        var sendMessage = SendMessage.builder()
+            .chatId(order.getKey().getTelegramUserId())
+            .text(text)
+            .build();
+
+        executeMethod(sendMessage);
     }
 
     private Response handleButtonTap(CallbackQuery query) {

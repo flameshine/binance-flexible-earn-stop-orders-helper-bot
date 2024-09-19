@@ -30,6 +30,7 @@ dependencies {
     implementation("io.quarkus:quarkus-arc")
     implementation("io.quarkus:quarkus-hibernate-orm-panache")
     implementation("io.quarkus:quarkus-jdbc-mysql")
+    implementation("io.quarkus:quarkus-resteasy-reactive-jackson")
     implementation("org.telegram:telegrambots:$telegramBotApiVersion")
     implementation("io.github.binance:binance-connector-java:$binanceConnectorVersion")
     implementation("com.google.guava:guava:$guavaVersion")

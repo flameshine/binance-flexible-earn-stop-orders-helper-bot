@@ -84,11 +84,12 @@ public class KeyboardMarkups {
     private static List<InlineKeyboardButton> toKeyboardRow(Order order, boolean appendItemId) {
 
         var label = String.format(
-            "%s: %s/%s - %s",
+            "%s: %s %s/%s - %s",
             order.getType(),
+            order.getAmount(),
             order.getBase(),
             order.getQuote(),
-            order.getTarget()
+            order.getPrice()
         );
 
         var callbackData = appendItemId
