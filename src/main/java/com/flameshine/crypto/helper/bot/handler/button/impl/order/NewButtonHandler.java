@@ -8,13 +8,13 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 
 import com.flameshine.crypto.helper.bot.enums.UserState;
 import com.flameshine.crypto.helper.bot.handler.button.ButtonHandler;
-import com.flameshine.crypto.helper.bot.model.Response;
+import com.flameshine.crypto.helper.bot.model.HandlerResponse;
 import com.flameshine.crypto.helper.bot.util.Messages;
 
 class NewButtonHandler implements ButtonHandler {
 
     @Override
-    public Response handle(CallbackQuery query) {
+    public HandlerResponse handle(CallbackQuery query) {
 
         // TODO: check if user has key connected
 
@@ -24,7 +24,7 @@ class NewButtonHandler implements ButtonHandler {
             .parseMode(ParseMode.MARKDOWNV2)
             .build();
 
-        return new Response(
+        return new HandlerResponse(
             List.of(sendMessage),
             UserState.WAITING_FOR_ORDER_DETAILS
         );

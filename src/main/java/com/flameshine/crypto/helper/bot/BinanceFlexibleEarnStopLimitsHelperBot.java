@@ -4,11 +4,9 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.google.common.base.Preconditions;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
-import jakarta.transaction.Transactional;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
@@ -20,21 +18,18 @@ import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import com.flameshine.crypto.helper.api.PriceTargetListener;
-import com.flameshine.crypto.helper.api.mapper.RedeemFlexibleProductRequestMapper;
-import com.flameshine.crypto.helper.binance.earn.FlexibleEarnClient;
+import com.flameshine.crypto.helper.api.handler.OrderExecutionHandler;
 import com.flameshine.crypto.helper.bot.config.BotConfig;
-import com.flameshine.crypto.helper.bot.entity.Order;
 import com.flameshine.crypto.helper.bot.enums.Command;
 import com.flameshine.crypto.helper.bot.enums.UserState;
 import com.flameshine.crypto.helper.bot.handler.message.MessageHandler;
 import com.flameshine.crypto.helper.bot.handler.message.impl.UnrecognizedMessageHandler;
-import com.flameshine.crypto.helper.bot.model.Response;
+import com.flameshine.crypto.helper.bot.model.HandlerResponse;
 import com.flameshine.crypto.helper.bot.orchestrator.Orchestrator;
 import com.flameshine.crypto.helper.bot.orchestrator.impl.CommandOrchestrator;
 import com.flameshine.crypto.helper.bot.util.Messages;
 
 // TODO: review language options
-// TODO: enforce at least one API key to be connected
 // TODO: execute actual orders
 // TODO: investigate if it makes sense to redeem assets slightly earlier than the target price is reached
 
@@ -45,27 +40,27 @@ public class BinanceFlexibleEarnStopLimitsHelperBot extends TelegramLongPollingB
 
     private final Orchestrator<Message> commandOrchestrator;
     private final Orchestrator<CallbackQuery> buttonOrchestrator;
-    private final MessageHandler apiKeyMessageHandler;
+    private final MessageHandler userDetailsMessageHandler;
     private final MessageHandler orderDetailsMessageHandler;
     private final MessageHandler unrecognizedMessageHandler;
-    private final FlexibleEarnClient flexibleEarnClient;
+    private final OrderExecutionHandler orderExecutionHandler;
     private final String username;
 
     @Inject
     public BinanceFlexibleEarnStopLimitsHelperBot(
         Orchestrator<CallbackQuery> buttonOrchestrator,
-        @Named("apiKeyMessageHandler") MessageHandler apiKeyMessageHandler,
+        @Named("userDetailsMessageHandler") MessageHandler userDetailsMessageHandler,
         @Named("orderDetailsMessageHandler") MessageHandler orderDetailsMessageHandler,
-        FlexibleEarnClient flexibleEarnClient,
+        OrderExecutionHandler orderExecutionHandler,
         BotConfig config
     ) {
         super(config.token());
         this.commandOrchestrator = new CommandOrchestrator();
         this.buttonOrchestrator = buttonOrchestrator;
-        this.apiKeyMessageHandler = apiKeyMessageHandler;
+        this.userDetailsMessageHandler = userDetailsMessageHandler;
         this.orderDetailsMessageHandler = orderDetailsMessageHandler;
         this.unrecognizedMessageHandler = new UnrecognizedMessageHandler();
-        this.flexibleEarnClient = flexibleEarnClient;
+        this.orderExecutionHandler = orderExecutionHandler;
         this.username = config.username();
         registerCommands();
     }
@@ -73,7 +68,7 @@ public class BinanceFlexibleEarnStopLimitsHelperBot extends TelegramLongPollingB
     @Override
     public void onUpdateReceived(Update update) {
 
-        Response response;
+        HandlerResponse response;
 
         if (isButtonTap(update)) {
             response = handleButtonTap(update.getCallbackQuery());
@@ -89,45 +84,33 @@ public class BinanceFlexibleEarnStopLimitsHelperBot extends TelegramLongPollingB
         return username;
     }
 
-    // TODO: move to a separate place
-    // TODO: implement actual purchase logic
-    // TODO: review this
-
     @Override
-    @Transactional
     public void onPriceReached(Long orderId) {
 
-        var orderOptional = Order.findByIdOptional(orderId);
+        var response = orderExecutionHandler.handle(orderId);
+        var order = response.order();
 
-        Preconditions.checkState(orderOptional.isPresent(), "Order must be present at this stage");
-
-        var order = orderOptional.get();
-
-        order.delete();
-
-        var isRedeemSuccessful = flexibleEarnClient.redeem(
-            RedeemFlexibleProductRequestMapper.map(order)
-        );
-
-        var text = isRedeemSuccessful
-            ? Messages.orderExecutionSuccess(order)
-            : Messages.orderExecutionFailure(order);
+        var text = switch (response.problem()) {
+            case null -> Messages.orderExecutionSuccess(order);
+            case BINANCE_API_PROBLEM -> Messages.orderExecutionFailure(order);
+            case INVALID_PRODUCT_ID -> Messages.ORDER_EXECUTION_FAILURE_INSUFFICIENT_FUNDS;
+        };
 
         var sendMessage = SendMessage.builder()
-            .chatId(order.getKey().getTelegramUserId())
+            .chatId(order.getAccount().getTelegramUserId())
             .text(text)
             .build();
 
         executeMethod(sendMessage);
     }
 
-    private Response handleButtonTap(CallbackQuery query) {
+    private HandlerResponse handleButtonTap(CallbackQuery query) {
         var response = buttonOrchestrator.orchestrate(query);
         USER_STATE.put(query.getFrom().getId(), response.state());
         return response;
     }
 
-    private Response handleMessage(Message message) {
+    private HandlerResponse handleMessage(Message message) {
 
         var chatId = message.getChatId();
 
@@ -141,7 +124,7 @@ public class BinanceFlexibleEarnStopLimitsHelperBot extends TelegramLongPollingB
 
         var response = switch (state) {
             case STATELESS -> unrecognizedMessageHandler.handle(message);
-            case WAITING_FOR_KEY_DETAILS -> apiKeyMessageHandler.handle(message);
+            case WAITING_FOR_ACCOUNT_DETAILS -> userDetailsMessageHandler.handle(message);
             case WAITING_FOR_ORDER_DETAILS -> orderDetailsMessageHandler.handle(message);
         };
 

@@ -9,10 +9,8 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 import com.flameshine.crypto.helper.bot.BinanceFlexibleEarnStopLimitsHelperBot;
 
-// TODO: set up logging
-// TODO: implement liveness/readiness probes
 // TODO: add proper README
-// TODO: deploy
+// TODO: deploy using static IP for commercial use
 
 @QuarkusMain
 public class Main {

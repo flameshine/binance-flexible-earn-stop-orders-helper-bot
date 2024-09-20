@@ -14,11 +14,11 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 
 import com.flameshine.crypto.helper.api.mapper.PriceAlertMapper;
 import com.flameshine.crypto.helper.binance.streamer.PriceDataStreamer;
-import com.flameshine.crypto.helper.bot.entity.Key;
-import com.flameshine.crypto.helper.bot.entity.Order;
+import com.flameshine.crypto.helper.api.entity.Account;
+import com.flameshine.crypto.helper.api.entity.Order;
 import com.flameshine.crypto.helper.bot.enums.UserState;
 import com.flameshine.crypto.helper.bot.handler.message.MessageHandler;
-import com.flameshine.crypto.helper.bot.model.Response;
+import com.flameshine.crypto.helper.bot.model.HandlerResponse;
 import com.flameshine.crypto.helper.bot.util.Messages;
 
 @ApplicationScoped
@@ -36,7 +36,7 @@ public class OrderDetailsMessageHandler implements MessageHandler {
 
     @Override
     @Transactional
-    public Response handle(Message message) {
+    public HandlerResponse handle(Message message) {
 
         var sendMessageBuilder = SendMessage.builder()
             .chatId(message.getChatId());
@@ -49,17 +49,17 @@ public class OrderDetailsMessageHandler implements MessageHandler {
                 .text(Messages.ORDER_CREATION_FAILURE)
                 .build();
 
-            return new Response(
+            return new HandlerResponse(
                 List.of(sendMessage),
                 UserState.WAITING_FOR_ORDER_DETAILS
             );
         }
 
-        var optionalKey = Key.findByTelegramUserIdOptional(
+        var optionalUser = Account.findByTelegramUserIdOptional(
             message.getFrom().getId()
         );
 
-        Preconditions.checkState(optionalKey.isPresent(), "An API key should be connected at this stage");
+        Preconditions.checkState(optionalUser.isPresent(), "User details should be specified at this stage");
 
         var order = Order.builder()
             .base(matcher.group(3))
@@ -67,7 +67,7 @@ public class OrderDetailsMessageHandler implements MessageHandler {
             .price(new BigDecimal(matcher.group(5)))
             .amount(new BigDecimal(matcher.group(2)))
             .type(Order.Type.fromValue(matcher.group(1)))
-            .key(optionalKey.get())
+            .account(optionalUser.get())
             .build();
 
         order.persist();
@@ -80,7 +80,7 @@ public class OrderDetailsMessageHandler implements MessageHandler {
             .text(Messages.ORDER_CREATION_SUCCESS)
             .build();
 
-        return new Response(
+        return new HandlerResponse(
             List.of(sendMessage)
         );
     }

@@ -7,7 +7,7 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 
 import com.flameshine.crypto.helper.bot.enums.Keyboard;
 import com.flameshine.crypto.helper.bot.handler.button.ButtonHandler;
-import com.flameshine.crypto.helper.bot.model.Response;
+import com.flameshine.crypto.helper.bot.model.HandlerResponse;
 import com.flameshine.crypto.helper.bot.orchestrator.Orchestrator;
 import com.flameshine.crypto.helper.bot.util.KeyboardMarkups;
 
@@ -30,7 +30,7 @@ public class ButtonOrchestrator implements Orchestrator<CallbackQuery> {
     }
 
     @Override
-    public Response orchestrate(CallbackQuery query) {
+    public HandlerResponse orchestrate(CallbackQuery query) {
 
         var data = query.getData();
 

@@ -11,10 +11,10 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageRe
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 
-import com.flameshine.crypto.helper.bot.entity.Key;
-import com.flameshine.crypto.helper.bot.entity.Order;
+import com.flameshine.crypto.helper.api.entity.Account;
+import com.flameshine.crypto.helper.api.entity.Order;
 import com.flameshine.crypto.helper.bot.handler.button.ButtonHandler;
-import com.flameshine.crypto.helper.bot.model.Response;
+import com.flameshine.crypto.helper.bot.model.HandlerResponse;
 import com.flameshine.crypto.helper.bot.util.KeyboardMarkups;
 import com.flameshine.crypto.helper.bot.util.Messages;
 
@@ -24,12 +24,12 @@ class ListButtonHandler implements ButtonHandler {
 
     @Override
     @Transactional
-    public Response handle(CallbackQuery query) {
+    public HandlerResponse handle(CallbackQuery query) {
 
         var message = query.getMessage();
         var chatId = message.getChatId();
-        var keys = Key.findAllByTelegramUserId(query.getFrom().getId());
-        var orders = Order.findAllByKeys(keys);
+        var keys = Account.findAllByTelegramUserId(query.getFrom().getId());
+        var orders = Order.findAllByAccounts(keys);
 
         if (orders.isEmpty()) {
 
@@ -38,7 +38,7 @@ class ListButtonHandler implements ButtonHandler {
                 .text(Messages.EMPTY_ORDER_LIST)
                 .build();
 
-            return new Response(
+            return new HandlerResponse(
                 List.of(sendMessage)
             );
         }
@@ -59,7 +59,7 @@ class ListButtonHandler implements ButtonHandler {
             .callbackQueryId(query.getId())
             .build();
 
-        return new Response(
+        return new HandlerResponse(
             List.of(answer, text, markup)
         );
     }

@@ -9,9 +9,9 @@ import jakarta.transaction.Transactional;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 
-import com.flameshine.crypto.helper.bot.entity.Key;
+import com.flameshine.crypto.helper.api.entity.Account;
 import com.flameshine.crypto.helper.bot.handler.button.ButtonHandler;
-import com.flameshine.crypto.helper.bot.model.Response;
+import com.flameshine.crypto.helper.bot.model.HandlerResponse;
 import com.flameshine.crypto.helper.bot.util.Messages;
 
 @ApplicationScoped
@@ -20,22 +20,22 @@ public class DisconnectButtonHandler implements ButtonHandler {
 
     @Override
     @Transactional
-    public Response handle(CallbackQuery query) {
+    public HandlerResponse handle(CallbackQuery query) {
 
         var sendMessageBuilder = SendMessage.builder()
             .chatId(query.getMessage().getChatId());
 
-        var key = Key.findByTelegramUserIdOptional(
+        var key = Account.findByTelegramUserIdOptional(
             query.getFrom().getId()
         );
 
         if (key.isEmpty()) {
 
             var sendMessage = sendMessageBuilder
-                .text(Messages.MISSING_KEY)
+                .text(Messages.MISSING_ACCOUNT)
                 .build();
 
-            return new Response(
+            return new HandlerResponse(
                 List.of(sendMessage)
             );
         }
@@ -46,7 +46,7 @@ public class DisconnectButtonHandler implements ButtonHandler {
             .text(Messages.DISCONNECT_SUCCESS)
             .build();
 
-        return new Response(
+        return new HandlerResponse(
             List.of(sendMessage)
         );
     }

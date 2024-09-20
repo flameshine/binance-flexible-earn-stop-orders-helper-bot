@@ -8,13 +8,13 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 
 import com.flameshine.crypto.helper.bot.enums.Keyboard;
 import com.flameshine.crypto.helper.bot.handler.message.MessageHandler;
-import com.flameshine.crypto.helper.bot.model.Response;
+import com.flameshine.crypto.helper.bot.model.HandlerResponse;
 import com.flameshine.crypto.helper.bot.util.Messages;
 
 public class MainMenuCommandHandler implements MessageHandler {
 
     @Override
-    public Response handle(Message message) {
+    public HandlerResponse handle(Message message) {
 
         var sendMessage = SendMessage.builder()
             .chatId(message.getChatId())
@@ -23,7 +23,7 @@ public class MainMenuCommandHandler implements MessageHandler {
             .text(Messages.MAIN_MENU)
             .build();
 
-        return new Response(
+        return new HandlerResponse(
             List.of(sendMessage)
         );
     }

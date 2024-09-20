@@ -2,7 +2,7 @@ package com.flameshine.crypto.helper.bot.util;
 
 import lombok.experimental.UtilityClass;
 
-import com.flameshine.crypto.helper.bot.entity.Order;
+import com.flameshine.crypto.helper.api.entity.Order;
 
 // TODO: complete messages
 // TODO: consider grouping
@@ -10,11 +10,10 @@ import com.flameshine.crypto.helper.bot.entity.Order;
 @UtilityClass
 public class Messages {
 
-    public static final String KEY_SETUP = "Please share your newly created API key: ";
     public static final String MAIN_MENU = "Please use the menu below to navigate the bot's functionality.";
-    public static final String ORDER_MENU = "In this section you can configure stop-limit orders for the selected Binance key.";
-    public static final String KEY_SETUP_SUCCESS = "Your API key was added successfully!";
-    public static final String KEY_SETUP_FAILURE = "Sorry, your API key looks incorrect. Please try again: ";
+    public static final String ORDER_MENU = "In this section you can configure stop-limit orders for the connected Binance account.";
+    public static final String ACCOUNT_SETUP_SUCCESS = "Your account was connected successfully!";
+    public static final String ACCOUNT_SETUP_FAILURE = "Sorry, your message format looks incorrect. Please try again: ";
     public static final String ORDER_CREATION_FAILURE = "Sorry, your order format seems incorrect. Please try again: ";
     public static final String ORDER_CREATION_SUCCESS = "Stop-limit order was created successfully!";
     public static final String EMPTY_ORDER_LIST = "It looks like you haven't added any orders yet.";
@@ -37,21 +36,67 @@ public class Messages {
         
         Main menu contains the following sections:
         
-        1. Keys. Manage added Binance API keys.
-        2. Orders. Handle stop-limit orders for the selected Binance key. You can view active orders, add new ones, or cancel them.
-        3. Support. Find payment details if you'd like to support the developer.
+        1. Orders. Manage stop-limit orders for the selected Binance key. You can view active orders, add new ones, or cancel them.
+        2. Support. Find payment details if you'd like to support the developer.
+        3. Disconnect. Disconnect your account and cancel all pending orders.
         
         For further assistance, please contact @flameshiner.
         """;
 
-    public static final String MISSING_KEY = """
-        It looks like you haven't connected your Binance API key yet.
+    public static final String ACCOUNT_ALREADY_EXISTS = """
+        You already have a Binance account connected.
+        Please disconnect it if you want to set up a new one.
+        """;
+
+    public static final String MISSING_ACCOUNT = """
+        It looks like you haven't connected your Binance account yet.
         Please use the /start command for the instructions.
         """;
 
     public static final String DISCONNECT_SUCCESS = """
-        Your API key was disconnected.
-        Call /start if you want to set up a new one.
+        Your account was disconnected.
+        Call /start if you want to connect a new one.
+        """;
+
+    public static final String ORDER_EXECUTION_FAILURE_INSUFFICIENT_FUNDS = """
+        Error executing your order.
+        
+        Please check if you have sufficient funds available in your Flexible Earn account.
+        """;
+
+    private static final String ACCOUNT_SETUP = """
+        Once you have your API and secret keys, send the details in the following format:
+        
+        `<api-key>:<secret-key>`
+        
+        Example:
+        
+        `xDPg6l09eUAicJZ4UvN:WxgbkSbzIOuO2IwLpRt`
+        """;
+
+    private static final String GREETING = """
+        Before you can leverage the bot's functionality, you'll need to add your Binance API key.
+        Please follow the instructions below to create one:
+        
+        [How to create API keys on Binance](https://www.binance.com/en/support/faq/how-to-create-api-keys-on-binance-360002502072)
+        
+        While creating your key, ensure that you:
+        
+            1. Whitelist the bot's IP address for your API key
+            2. Enable the "Spot & Margin trading" option
+        
+        Rest assured, your funds will remain safe.
+        """;
+
+    private static final String SUPPORT_DETAILS = """
+        Thank you for using the bot!
+        If you'd like to support the developer and contribute to future improvements, you can send a donation via TRC20.
+        
+        TRC20 (USDT) wallet address:
+        
+        `TL9V5p9sehJu2L1cSATH6xhedyWNtEeceR`
+        
+        Thank you for your support!
         """;
 
     private static final String ORDER_CREATION_TRADING_PAIR = """
@@ -69,27 +114,12 @@ public class Messages {
         `b: 5 BNB/USDT - 465`
         """;
 
-    private static final String GREETING = """
-        Before you can to leverage the bot's functionality, you'll need to add your first Binance API key. See instructions below.
-        
-        [How to create API keys on Binance](https://www.binance.com/en/support/faq/how-to-create-api-keys-on-binance-360002502072)
-        
-        Rest assured, your funds will remain safe, as the API keys allow to read-only operations exclusively.
-        """;
-
-    private static final String SUPPORT_DETAILS = """
-        Thank you for using the bot!
-        If you'd like to support the developer and contribute to future improvements, you can send a donation via TRC20.
-        
-        TRC20 (USDT) wallet address:
-        
-        `TL9V5p9sehJu2L1cSATH6xhedyWNtEeceR`
-        
-        Thank you for your support!
-        """;
-
     public static String greeting() {
         return escapeMarkdown(GREETING);
+    }
+
+    public static String accountSetup() {
+        return escapeMarkdown(ACCOUNT_SETUP);
     }
 
     public static String supportDetails() {

@@ -13,7 +13,7 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import com.flameshine.crypto.helper.bot.enums.Keyboard;
 import com.flameshine.crypto.helper.bot.enums.MainMenuButton;
 import com.flameshine.crypto.helper.bot.handler.button.ButtonHandler;
-import com.flameshine.crypto.helper.bot.model.Response;
+import com.flameshine.crypto.helper.bot.model.HandlerResponse;
 import com.flameshine.crypto.helper.bot.util.Messages;
 
 @ApplicationScoped
@@ -32,7 +32,7 @@ public class MainMenuButtonHandler implements ButtonHandler {
     }
 
     @Override
-    public Response handle(CallbackQuery query) {
+    public HandlerResponse handle(CallbackQuery query) {
 
         var message = query.getMessage();
 
@@ -69,7 +69,7 @@ public class MainMenuButtonHandler implements ButtonHandler {
             .callbackQueryId(query.getId())
             .build();
 
-        return new Response(
+        return new HandlerResponse(
             List.of(answer, text, markup)
         );
     }

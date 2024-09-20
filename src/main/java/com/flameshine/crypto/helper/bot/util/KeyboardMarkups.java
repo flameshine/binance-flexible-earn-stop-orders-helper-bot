@@ -7,7 +7,7 @@ import lombok.experimental.UtilityClass;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
-import com.flameshine.crypto.helper.bot.entity.Order;
+import com.flameshine.crypto.helper.api.entity.Order;
 
 // TODO: add emojis
 

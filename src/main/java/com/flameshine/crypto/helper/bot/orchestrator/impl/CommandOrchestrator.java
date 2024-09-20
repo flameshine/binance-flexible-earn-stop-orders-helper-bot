@@ -7,7 +7,7 @@ import com.flameshine.crypto.helper.bot.handler.message.impl.command.HelpCommand
 import com.flameshine.crypto.helper.bot.handler.message.impl.command.MainMenuCommandHandler;
 import com.flameshine.crypto.helper.bot.handler.message.impl.command.StartCommandHandler;
 import com.flameshine.crypto.helper.bot.handler.message.MessageHandler;
-import com.flameshine.crypto.helper.bot.model.Response;
+import com.flameshine.crypto.helper.bot.model.HandlerResponse;
 import com.flameshine.crypto.helper.bot.orchestrator.Orchestrator;
 
 public class CommandOrchestrator implements Orchestrator<Message> {
@@ -23,7 +23,7 @@ public class CommandOrchestrator implements Orchestrator<Message> {
     }
 
     @Override
-    public Response orchestrate(Message message) {
+    public HandlerResponse orchestrate(Message message) {
         var command = Command.fromValue(message.getText());
         return switch (command) {
             case START -> startCommandHandler.handle(message);

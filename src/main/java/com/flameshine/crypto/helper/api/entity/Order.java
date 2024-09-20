@@ -1,4 +1,4 @@
-package com.flameshine.crypto.helper.bot.entity;
+package com.flameshine.crypto.helper.api.entity;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -46,15 +46,15 @@ public class Order extends PanacheEntity {
     private Type type;
 
     @ManyToOne
-    @JoinColumn(name = "key_id", nullable = false)
-    private Key key;
+    @JoinColumn(name = "account_id", nullable = false)
+    private Account account;
 
     public static Optional<Order> findByIdOptional(Long id) {
         return find("id", id).firstResultOptional();
     }
 
-    public static List<Order> findAllByKeys(List<Key> keys) {
-        return find("key in ?1", keys).list();
+    public static List<Order> findAllByAccounts(List<Account> accounts) {
+        return find("account in ?1", accounts).list();
     }
 
     public enum Type {
