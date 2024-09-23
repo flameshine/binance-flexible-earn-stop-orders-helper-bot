@@ -12,10 +12,11 @@ import jakarta.transaction.Transactional;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
-import com.flameshine.crypto.helper.api.mapper.PriceAlertMapper;
-import com.flameshine.crypto.helper.binance.alert.PriceAlertHandler;
 import com.flameshine.crypto.helper.api.entity.Account;
 import com.flameshine.crypto.helper.api.entity.Order;
+import com.flameshine.crypto.helper.api.enums.OrderType;
+import com.flameshine.crypto.helper.api.mapper.PriceAlertMapper;
+import com.flameshine.crypto.helper.binance.alert.PriceAlertHandler;
 import com.flameshine.crypto.helper.bot.enums.UserState;
 import com.flameshine.crypto.helper.bot.handler.message.MessageHandler;
 import com.flameshine.crypto.helper.bot.model.HandlerResponse;
@@ -66,7 +67,7 @@ public class OrderDetailsMessageHandler implements MessageHandler {
             .quote(matcher.group(4))
             .price(new BigDecimal(matcher.group(5)))
             .quantity(new BigDecimal(matcher.group(2)))
-            .type(Order.Type.fromValue(matcher.group(1)))
+            .type(OrderType.fromValue(matcher.group(1)))
             .account(optionalUser.get())
             .build();
 
