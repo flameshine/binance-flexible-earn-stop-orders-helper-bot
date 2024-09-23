@@ -29,10 +29,6 @@ import com.flameshine.crypto.helper.bot.orchestrator.Orchestrator;
 import com.flameshine.crypto.helper.bot.orchestrator.impl.CommandOrchestrator;
 import com.flameshine.crypto.helper.bot.util.Messages;
 
-// TODO: review language options
-// TODO: execute actual orders
-// TODO: investigate if it makes sense to redeem assets slightly earlier than the target price is reached
-
 @ApplicationScoped
 public class BinanceFlexibleEarnStopLimitsHelperBot extends TelegramLongPollingBot implements PriceTargetListener {
 
@@ -93,7 +89,7 @@ public class BinanceFlexibleEarnStopLimitsHelperBot extends TelegramLongPollingB
         var text = switch (response.problem()) {
             case null -> Messages.orderExecutionSuccess(order);
             case BINANCE_API_PROBLEM -> Messages.orderExecutionFailure(order);
-            case INVALID_PRODUCT_ID -> Messages.ORDER_EXECUTION_FAILURE_INSUFFICIENT_FUNDS;
+            case INSUFFICIENT_FUNDS -> Messages.orderExecutionFailureInsufficientFunds(order);
         };
 
         var sendMessage = SendMessage.builder()

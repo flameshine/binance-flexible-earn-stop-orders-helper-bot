@@ -2,15 +2,11 @@ package com.flameshine.crypto.helper.binance.model;
 
 import java.math.BigDecimal;
 
+import com.flameshine.crypto.helper.api.enums.OrderType;
+
 public record PriceAlert(
     Long id,
-    String pair,
-    Type type,
+    TradingPair pair,
+    OrderType type,
     BigDecimal target
-) {
-
-    public enum Type {
-        BUY,
-        SELL
-    }
-}
+) {}

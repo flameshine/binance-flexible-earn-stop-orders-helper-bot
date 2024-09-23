@@ -13,7 +13,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 import com.flameshine.crypto.helper.api.mapper.PriceAlertMapper;
-import com.flameshine.crypto.helper.binance.streamer.PriceDataStreamer;
+import com.flameshine.crypto.helper.binance.alert.PriceAlertHandler;
 import com.flameshine.crypto.helper.api.entity.Account;
 import com.flameshine.crypto.helper.api.entity.Order;
 import com.flameshine.crypto.helper.bot.enums.UserState;
@@ -27,11 +27,11 @@ public class OrderDetailsMessageHandler implements MessageHandler {
 
     private static final Pattern ORDER_DETAILS_PATTERN = Pattern.compile("(^[bs]):\\s(\\d+\\.?\\d*)\\s([A-Z]+)/([A-Z]+)\\s-\\s(\\d+\\.?\\d*)$");
 
-    private final PriceDataStreamer priceDataStreamer;
+    private final PriceAlertHandler priceAlertHandler;
 
     @Inject
-    public OrderDetailsMessageHandler(PriceDataStreamer priceDataStreamer) {
-        this.priceDataStreamer = priceDataStreamer;
+    public OrderDetailsMessageHandler(PriceAlertHandler priceAlertHandler) {
+        this.priceAlertHandler = priceAlertHandler;
     }
 
     @Override
@@ -65,14 +65,14 @@ public class OrderDetailsMessageHandler implements MessageHandler {
             .base(matcher.group(3))
             .quote(matcher.group(4))
             .price(new BigDecimal(matcher.group(5)))
-            .amount(new BigDecimal(matcher.group(2)))
+            .quantity(new BigDecimal(matcher.group(2)))
             .type(Order.Type.fromValue(matcher.group(1)))
             .account(optionalUser.get())
             .build();
 
         order.persist();
 
-        priceDataStreamer.stream(
+        priceAlertHandler.handle(
             PriceAlertMapper.map(order)
         );
 

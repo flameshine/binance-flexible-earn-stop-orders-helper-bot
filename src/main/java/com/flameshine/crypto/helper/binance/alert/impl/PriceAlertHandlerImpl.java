@@ -1,4 +1,4 @@
-package com.flameshine.crypto.helper.binance.streamer.impl;
+package com.flameshine.crypto.helper.binance.alert.impl;
 
 import java.math.BigDecimal;
 import java.util.Map;
@@ -15,35 +15,42 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.flameshine.crypto.helper.api.PriceTargetListener;
+import com.flameshine.crypto.helper.api.enums.OrderType;
 import com.flameshine.crypto.helper.binance.config.ApiConfig;
 import com.flameshine.crypto.helper.binance.model.PriceAlert;
-import com.flameshine.crypto.helper.binance.streamer.PriceDataStreamer;
+import com.flameshine.crypto.helper.binance.alert.PriceAlertHandler;
 
 // TODO: load all orders from the database on startup (failure recovery)
+// TODO: investigate if it makes sense to process alert slightly earlier before the target price is reached
 
 @ApplicationScoped
 @Slf4j
-public class PriceDataStreamerImpl implements PriceDataStreamer {
+public class PriceAlertHandlerImpl implements PriceAlertHandler {
 
     private final PriceTargetListener listener;
     private final WebSocketStreamClient client;
     private final Map<Long, Integer> streamedAlerts;
 
     @Inject
-    public PriceDataStreamerImpl(PriceTargetListener listener, ApiConfig config) {
+    public PriceAlertHandlerImpl(PriceTargetListener listener, ApiConfig config) {
         this.listener = listener;
         this.client = new WebSocketStreamClientImpl(config.streamUrl());
         this.streamedAlerts = new ConcurrentHashMap<>();
     }
 
     @Override
-    public void stream(PriceAlert alert) {
+    public void handle(PriceAlert alert) {
 
         var streamId = client.tradeStream(
-            alert.pair(),
+            alert.pair().toLowerCase(),
             event -> {
 
-                log.debug("Received event: {}", event);
+                if (!streamedAlerts.containsKey(alert.id())) {
+                    log.debug("Alert with id {} has been already removed. Skipping event.", alert.id());
+                    return;
+                }
+
+                log.debug("Processing event: {}", event);
 
                 var trigger = getTrigger(alert.type(), alert.target());
                 var price = extractPrice(event);
@@ -78,8 +85,8 @@ public class PriceDataStreamerImpl implements PriceDataStreamer {
         streamedAlerts.remove(alertId);
     }
 
-    private static Predicate<BigDecimal> getTrigger(PriceAlert.Type type, BigDecimal alertTarget) {
-        return PriceAlert.Type.BUY == type
+    private static Predicate<BigDecimal> getTrigger(OrderType type, BigDecimal alertTarget) {
+        return OrderType.BUY == type
             ? price -> alertTarget.compareTo(price) >= 0
             : price -> alertTarget.compareTo(price) <= 0;
     }

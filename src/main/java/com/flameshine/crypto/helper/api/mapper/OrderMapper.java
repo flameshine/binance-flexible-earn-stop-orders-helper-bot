@@ -2,19 +2,18 @@ package com.flameshine.crypto.helper.api.mapper;
 
 import lombok.experimental.UtilityClass;
 
-import com.flameshine.crypto.helper.api.entity.Order;
-import com.flameshine.crypto.helper.binance.model.PriceAlert;
+import com.flameshine.crypto.helper.binance.model.OrderCreationRequest;
 import com.flameshine.crypto.helper.binance.model.TradingPair;
 
 @UtilityClass
-public class PriceAlertMapper {
+class OrderMapper {
 
-    public static PriceAlert map(Order input) {
+    static OrderCreationRequest.Order map(com.flameshine.crypto.helper.api.entity.Order input) {
         var pair = new TradingPair(input.getBase(), input.getQuote());
-        return new PriceAlert(
-            input.id,
+        return new OrderCreationRequest.Order(
             pair,
             input.getType(),
+            input.getQuantity(),
             input.getPrice()
         );
     }

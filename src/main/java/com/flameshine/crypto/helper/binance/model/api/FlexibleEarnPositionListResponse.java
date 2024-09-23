@@ -11,7 +11,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public record FlexibleEarnPositionListResponse(
     @JsonProperty("rows") List<Row> rows
 ) {
-
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Row(

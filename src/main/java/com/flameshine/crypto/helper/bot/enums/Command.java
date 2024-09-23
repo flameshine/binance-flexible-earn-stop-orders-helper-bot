@@ -1,5 +1,7 @@
 package com.flameshine.crypto.helper.bot.enums;
 
+import java.util.Arrays;
+
 import lombok.Getter;
 
 @Getter
@@ -16,14 +18,10 @@ public enum Command {
     }
 
     public static Command fromValue(String value) {
-
-        for (var item : values()) {
-            if (item.toString().equals(value)) {
-                return item;
-            }
-        }
-
-        throw new IllegalArgumentException("Invalid command: " + value);
+        return Arrays.stream(Command.values())
+            .filter(command -> command.toString().equals(value))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("Invalid command: " + value));
     }
 
     @Override

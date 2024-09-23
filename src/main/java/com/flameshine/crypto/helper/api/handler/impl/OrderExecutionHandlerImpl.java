@@ -6,25 +6,30 @@ import jakarta.transaction.Transactional;
 
 import com.flameshine.crypto.helper.api.entity.Order;
 import com.flameshine.crypto.helper.api.handler.OrderExecutionHandler;
+import com.flameshine.crypto.helper.api.mapper.OrderCreationRequestMapper;
 import com.flameshine.crypto.helper.api.mapper.RedeemFlexibleProductRequestMapper;
 import com.flameshine.crypto.helper.api.model.OrderExecutionResponse;
 import com.flameshine.crypto.helper.binance.earn.FlexibleEarnClient;
+import com.flameshine.crypto.helper.binance.spot.OrderCreator;
 
 @ApplicationScoped
 public class OrderExecutionHandlerImpl implements OrderExecutionHandler {
 
     private final FlexibleEarnClient flexibleEarnClient;
+    private final OrderCreator orderCreator;
 
     @Inject
-    public OrderExecutionHandlerImpl(FlexibleEarnClient flexibleEarnClient) {
+    public OrderExecutionHandlerImpl(
+        FlexibleEarnClient flexibleEarnClient,
+        OrderCreator orderCreator
+    ) {
         this.flexibleEarnClient = flexibleEarnClient;
+        this.orderCreator = orderCreator;
     }
 
     @Override
     @Transactional
     public OrderExecutionResponse handle(Long orderId) {
-
-        // TODO: fix runtime exception thrown here
 
         var order = Order.findByIdOptional(orderId)
             .orElseThrow(() -> new RuntimeException("Order must be present at this stage"));
@@ -35,9 +40,14 @@ public class OrderExecutionHandlerImpl implements OrderExecutionHandler {
             RedeemFlexibleProductRequestMapper.map(order)
         );
 
-        // TODO: place stop-order here
+        if (problem.isPresent()) {
+            return new OrderExecutionResponse(order, problem.get());
+        }
 
-        return problem.map(value -> new OrderExecutionResponse(order, value))
-            .orElseGet(() -> new OrderExecutionResponse(order, null));
+        orderCreator.create(
+            OrderCreationRequestMapper.map(order)
+        );
+
+        return new OrderExecutionResponse(order, null);
     }
 }

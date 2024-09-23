@@ -86,7 +86,7 @@ public class KeyboardMarkups {
         var label = String.format(
             "%s: %s %s/%s - %s",
             order.getType(),
-            order.getAmount(),
+            order.getQuantity(),
             order.getBase(),
             order.getQuote(),
             order.getPrice()

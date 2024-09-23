@@ -1,5 +1,7 @@
 package com.flameshine.crypto.helper.bot.enums;
 
+import java.util.Arrays;
+
 public enum MainMenuButton {
 
     DISCONNECT,
@@ -8,13 +10,9 @@ public enum MainMenuButton {
     SUPPORT;
 
     public static MainMenuButton fromValue(String value) {
-
-        for (var item : values()) {
-            if (item.name().equalsIgnoreCase(value)) {
-                return item;
-            }
-        }
-
-        throw new IllegalArgumentException("Invalid main menu button: " + value);
+        return Arrays.stream(MainMenuButton.values())
+            .filter(mainMenuButton -> mainMenuButton.name().equalsIgnoreCase(value))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("Invalid main menu button: " + value));
     }
 }

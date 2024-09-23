@@ -19,6 +19,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import com.flameshine.crypto.helper.api.enums.OrderType;
+
 @Entity
 @Table(name = "stop_order") // "order" is a reserved keyword in SQL
 @Builder
@@ -38,12 +40,12 @@ public class Order extends PanacheEntity {
     @Column(name = "price", nullable = false)
     private BigDecimal price;
 
-    @Column(name = "amount", nullable = false)
-    private BigDecimal amount;
+    @Column(name = "quantity", nullable = false)
+    private BigDecimal quantity;
 
     @Column(name = "type", nullable = false)
     @Enumerated(EnumType.STRING)
-    private Type type;
+    private OrderType type;
 
     @ManyToOne
     @JoinColumn(name = "account_id", nullable = false)
@@ -55,27 +57,5 @@ public class Order extends PanacheEntity {
 
     public static List<Order> findAllByAccounts(List<Account> accounts) {
         return find("account in ?1", accounts).list();
-    }
-
-    public enum Type {
-
-        BUY,
-        SELL;
-
-        public static Type fromValue(String value) {
-
-            for (var item : values()) {
-                if (item.name().substring(0, 1).equalsIgnoreCase(value)) {
-                    return item;
-                }
-            }
-
-            throw new IllegalArgumentException("Invalid order type: " + value);
-        }
-
-        @Override
-        public String toString() {
-            return name().toLowerCase();
-        }
     }
 }

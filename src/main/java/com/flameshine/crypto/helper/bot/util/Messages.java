@@ -15,7 +15,7 @@ public class Messages {
     public static final String ACCOUNT_SETUP_SUCCESS = "Your account was connected successfully!";
     public static final String ACCOUNT_SETUP_FAILURE = "Sorry, your message format looks incorrect. Please try again: ";
     public static final String ORDER_CREATION_FAILURE = "Sorry, your order format seems incorrect. Please try again: ";
-    public static final String ORDER_CREATION_SUCCESS = "Stop-limit order was created successfully!";
+    public static final String ORDER_CREATION_SUCCESS = "Stop-limit order was placed successfully!";
     public static final String EMPTY_ORDER_LIST = "It looks like you haven't added any orders yet.";
     public static final String ORDER_LIST = "Your orders: ";
     public static final String ORDER_CANCELLATION = "Please select an order you'd like to cancel: ";
@@ -56,12 +56,6 @@ public class Messages {
     public static final String DISCONNECT_SUCCESS = """
         Your account was disconnected.
         Call /start if you want to connect a new one.
-        """;
-
-    public static final String ORDER_EXECUTION_FAILURE_INSUFFICIENT_FUNDS = """
-        Error executing your order.
-        
-        Please check if you have sufficient funds available in your Flexible Earn account.
         """;
 
     private static final String ACCOUNT_SETUP = """
@@ -134,7 +128,7 @@ public class Messages {
         return String.format(
             "Your %s order for %s %s at a price of %s has been executed successfully!",
             order.getType(),
-            order.getAmount(),
+            order.getQuantity(),
             order.getBase(),
             order.getPrice()
         );
@@ -142,9 +136,19 @@ public class Messages {
 
     public static String orderExecutionFailure(Order order) {
         return String.format(
-            "Unable to execute your %s order for %s %s at a price of %s. Please check if you have sufficient assets available.",
+            "Unable to execute your %s order for %s %s at a price of %s due to the unexpected server problem.",
             order.getType(),
-            order.getAmount(),
+            order.getQuantity(),
+            order.getBase(),
+            order.getPrice()
+        );
+    }
+
+    public static String orderExecutionFailureInsufficientFunds(Order order) {
+        return String.format(
+            "Unable to execute your %s order for %s %s at a price of %s due to insufficient funds on your Flexible Earn balance.",
+            order.getType(),
+            order.getQuantity(),
             order.getBase(),
             order.getPrice()
         );

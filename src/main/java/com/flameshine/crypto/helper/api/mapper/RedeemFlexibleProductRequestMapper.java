@@ -8,9 +8,9 @@ import com.flameshine.crypto.helper.api.entity.Order;
 @UtilityClass
 public class RedeemFlexibleProductRequestMapper {
 
-    public static RedeemFlexibleProductRequest map(Order order) {
-        var account = AccountMapper.map(order.getAccount());
-        var amount = order.getAmount().multiply(order.getPrice());
-        return new RedeemFlexibleProductRequest(account, order.getQuote(), amount);
+    public static RedeemFlexibleProductRequest map(Order input) {
+        var account = ApiKeyMapper.map(input.getAccount());
+        var amount = input.getQuantity().multiply(input.getPrice());
+        return new RedeemFlexibleProductRequest(account, input.getQuote(), amount);
     }
 }
