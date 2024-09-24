@@ -36,18 +36,19 @@ public class OrderExecutionHandlerImpl implements OrderExecutionHandler {
 
         order.delete();
 
-        var problem = flexibleEarnClient.redeem(
+        var redeemProblem = flexibleEarnClient.redeem(
             RedeemFlexibleProductRequestMapper.map(order)
         );
 
-        if (problem.isPresent()) {
-            return new OrderExecutionResponse(order, problem.get());
+        if (redeemProblem.isPresent()) {
+            return new OrderExecutionResponse(order, redeemProblem.get());
         }
 
-        orderCreator.create(
+        var orderProblem = orderCreator.create(
             OrderCreationRequestMapper.map(order)
         );
 
-        return new OrderExecutionResponse(order, null);
+        return orderProblem.map(problem -> new OrderExecutionResponse(order, problem))
+            .orElseGet(() -> new OrderExecutionResponse(order, null));
     }
 }

@@ -4,22 +4,19 @@ import lombok.experimental.UtilityClass;
 
 import com.flameshine.crypto.helper.api.entity.Order;
 
-// TODO: complete messages
-// TODO: consider grouping
-
 @UtilityClass
 public class Messages {
 
     public static final String MAIN_MENU = "Please use the menu below to navigate the bot's functionality.";
     public static final String ORDER_MENU = "In this section you can configure stop-limit orders for the connected Binance account.";
-    public static final String ACCOUNT_SETUP_SUCCESS = "Your account was connected successfully!";
+    public static final String ACCOUNT_SETUP_SUCCESS = "Your account was connected successfully \u2705";
     public static final String ACCOUNT_SETUP_FAILURE = "Sorry, your message format looks incorrect. Please try again: ";
     public static final String ORDER_CREATION_FAILURE = "Sorry, your order format seems incorrect. Please try again: ";
-    public static final String ORDER_CREATION_SUCCESS = "Stop-limit order was placed successfully!";
+    public static final String ORDER_CREATION_SUCCESS = "Stop-limit order was placed successfully \u2705";
     public static final String EMPTY_ORDER_LIST = "It looks like you haven't added any orders yet.";
     public static final String ORDER_LIST = "Your orders: ";
     public static final String ORDER_CANCELLATION = "Please select an order you'd like to cancel: ";
-    public static final String ORDER_CANCELLATION_SUCCESS = "Your order was cancelled successfully.";
+    public static final String ORDER_CANCELLATION_SUCCESS = "Your order was cancelled successfully \u2705";
 
     public static final String UNRECOGNIZED_MESSAGE = """
         Sorry, I didn't recognize your command.
@@ -86,7 +83,7 @@ public class Messages {
         Thank you for using the bot!
         If you'd like to support the developer and contribute to future improvements, you can send a donation via TRC20.
         
-        TRC20 (USDT) wallet address:
+        TRC20 [USDT] wallet address:
         
         `TL9V5p9sehJu2L1cSATH6xhedyWNtEeceR`
         

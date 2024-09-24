@@ -11,7 +11,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 
-import com.flameshine.crypto.helper.api.model.Problem;
+import com.flameshine.crypto.helper.api.enums.Problem;
 import com.flameshine.crypto.helper.binance.config.ApiConfig;
 import com.flameshine.crypto.helper.binance.earn.FlexibleEarnClient;
 import com.flameshine.crypto.helper.binance.enums.Stablecoin;

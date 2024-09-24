@@ -2,6 +2,7 @@ package com.flameshine.crypto.helper.bot.handler.button.impl.order;
 
 import java.util.List;
 
+import com.google.common.base.Preconditions;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Named;
 import jakarta.transaction.Transactional;
@@ -28,11 +29,11 @@ class CancelButtonHandler implements ButtonHandler {
 
         var message = query.getMessage();
         var chatId = message.getChatId();
+        var account = Account.findByTelegramUserIdOptional(query.getFrom().getId());
 
-        // TODO: review this logic, it should cancel order only for one user
+        Preconditions.checkState(account.isPresent(), "Account should be found at this stage");
 
-        var keys = Account.findAllByTelegramUserId(query.getFrom().getId());
-        var orders = Order.findAllByAccounts(keys);
+        var orders = Order.findAllByAccount(account.get());
 
         if (orders.isEmpty()) {
 

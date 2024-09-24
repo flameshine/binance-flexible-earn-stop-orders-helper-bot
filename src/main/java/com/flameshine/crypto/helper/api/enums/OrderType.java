@@ -18,6 +18,6 @@ public enum OrderType {
 
     @Override
     public String toString() {
-        return name().toLowerCase();
+        return name().toUpperCase();
     }
 }

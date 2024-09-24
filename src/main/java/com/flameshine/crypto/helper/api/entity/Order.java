@@ -55,7 +55,7 @@ public class Order extends PanacheEntity {
         return find("id", id).firstResultOptional();
     }
 
-    public static List<Order> findAllByAccounts(List<Account> accounts) {
-        return find("account in ?1", accounts).list();
+    public static List<Order> findAllByAccount(Account account) {
+        return find("account", account).list();
     }
 }

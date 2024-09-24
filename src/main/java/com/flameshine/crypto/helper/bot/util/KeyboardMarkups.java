@@ -9,8 +9,6 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 
 import com.flameshine.crypto.helper.api.entity.Order;
 
-// TODO: add emojis
-
 @UtilityClass
 public class KeyboardMarkups {
 
@@ -24,17 +22,17 @@ public class KeyboardMarkups {
     public static InlineKeyboardMarkup mainMenu() {
 
         var orders = InlineKeyboardButton.builder()
-            .text("Orders")
+            .text("\uD83D\uDCDC Orders")
             .callbackData("orders")
             .build();
 
         var support = InlineKeyboardButton.builder()
-            .text("Support")
+            .text("\uD83D\uDCB0 Support")
             .callbackData("support")
             .build();
 
         var disconnect = InlineKeyboardButton.builder()
-            .text("Disconnect")
+            .text("\u274C Disconnect")
             .callbackData("disconnect")
             .build();
 
@@ -70,8 +68,6 @@ public class KeyboardMarkups {
         var orderButtons = orders.stream()
             .map(order -> toKeyboardRow(order, appendRemovalPrefix))
             .toList();
-
-        // TODO: fix the "back" button (should return to the previous menu)
 
         var keyboard = Stream.concat(orderButtons.stream(), Stream.of(List.of(BACK)))
             .toList();
