@@ -52,6 +52,38 @@ This ensures that your assets continue to earn interest, even as the bot monitor
     </ul>
 </ol>
 
+<h2>Usage</h2>
+
+If you want to leverage this bot for personal or commercial use, perform the following steps:
+
+<ol>
+    <li>
+        <b>Register your bot on Telegram</b>
+        <ul>
+            <li>Follow the <a href="https://core.telegram.org/bots/api">official Telegram Bot API documentation</a> to register your bot and obtain a bot token.</li>
+        </ul>
+    </li>
+    <li>
+        <b>Configure the bot</b>
+        <ul>
+            <li>Save generated bot's token and username in the application.properties file.</li>
+            <li>Update your database connection settings in application.properties.</li>
+        </ul>
+    </li>
+    <li>
+        <b>Run the bot</b>
+        <ul>
+            <li>You can run the bot locally or deploy it to your preferred environment. Ensure the environment has a <b>static</b> IP address.</li>
+        </ul>
+    </li>
+    <li>
+        <b>Allowlist the bot's IP address</b>
+        <ul>
+            <li>On Binance, whitelist the bot's IP address for your API key to enable secure and uninterrupted trading.</li>
+        </ul>
+    </li>
+</ol>
+
 <h2>Screenshots</h2>
 
 Here are visual guides to help you navigate the bot's features:
@@ -111,38 +143,6 @@ Help command:
 Account disconnection:
 
 ![alt text](images/14-account-disconnection.png)
-
-<h2>Usage</h2>
-
-If you want to leverage this bot for personal or commercial use, perform the following steps:
-
-<ol>
-    <li>
-        <b>Register your bot on Telegram</b>
-        <ul>
-            <li>Follow the <a href="https://core.telegram.org/bots/api">official Telegram Bot API documentation</a> to register your bot and obtain a bot token.</li>
-        </ul>
-    </li>
-    <li>
-        <b>Configure the bot</b>
-        <ul>
-            <li>Save generated bot's token and username in the application.properties file.</li>
-            <li>Update your database connection settings in application.properties.</li>
-        </ul>
-    </li>
-    <li>
-        <b>Run the bot</b>
-        <ul>
-            <li>You can run the bot locally or deploy it to your preferred environment. Ensure the environment has a <b>static</b> IP address.</li>
-        </ul>
-    </li>
-    <li>
-        <b>Allowlist the bot's IP address</b>
-        <ul>
-            <li>On Binance, whitelist the bot's IP address for your API key to enable secure and uninterrupted trading.</li>
-        </ul>
-    </li>
-</ol>
 
 <h2>Licence</h2>
 
