@@ -41,12 +41,14 @@ public class PriceAlertHandlerImpl implements PriceAlertHandler {
     @Override
     public void handle(PriceAlert alert) {
 
+        var alertId = alert.id();
+
         var streamId = client.tradeStream(
             alert.pair().toLowerCase(),
             event -> {
 
-                if (!streamedAlerts.containsKey(alert.id())) {
-                    log.debug("Alert with id {} has been already removed. Skipping event.", alert.id());
+                if (!streamedAlerts.containsKey(alertId)) {
+                    log.debug("Alert with id {} has been already removed. Skipping event.", alertId);
                     return;
                 }
 
@@ -60,18 +62,17 @@ public class PriceAlertHandlerImpl implements PriceAlertHandler {
                 }
 
                 if (trigger.test(price.get())) {
-                    listener.onPriceReached(alert.id());
-                    remove(alert);
+                    listener.onPriceReached(alertId);
+                    remove(alertId);
                 }
             }
         );
 
-        streamedAlerts.putIfAbsent(alert.id(), streamId);
+        streamedAlerts.putIfAbsent(alertId, streamId);
     }
 
-    private void remove(PriceAlert alert) {
-
-        var alertId = alert.id();
+    @Override
+    public void remove(Long alertId) {
 
         if (!streamedAlerts.containsKey(alertId)) {
             return;

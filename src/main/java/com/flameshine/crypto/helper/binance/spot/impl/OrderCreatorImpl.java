@@ -48,7 +48,7 @@ public class OrderCreatorImpl implements OrderCreator {
 
         try {
             client.createTrade()
-                .testNewOrder(parameters);
+                .newOrder(parameters);
         } catch (BinanceClientException e) {
             log.error(e.getMessage(), e);
             return Optional.of(Problem.BINANCE_API_PROBLEM);

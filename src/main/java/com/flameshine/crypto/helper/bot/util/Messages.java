@@ -28,8 +28,9 @@ public class Messages {
         
         You can interact with me using the following commands:
         
-        /menu - Main menu
-        /help - Help
+        /start - Begin interacting with the bot
+        /menu - Access the main menu to manage orders
+        /help - Get assistance and information about the bot’s features
         
         Main menu contains the following sections:
         

@@ -2,14 +2,15 @@ package com.flameshine.crypto.helper.bot.handler.button.impl.order;
 
 import java.util.List;
 
-import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.transaction.Transactional;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 
 import com.flameshine.crypto.helper.api.entity.Order;
+import com.flameshine.crypto.helper.binance.alert.PriceAlertHandler;
 import com.flameshine.crypto.helper.bot.handler.button.ButtonHandler;
 import com.flameshine.crypto.helper.bot.model.HandlerResponse;
 import com.flameshine.crypto.helper.bot.util.Messages;
@@ -17,6 +18,13 @@ import com.flameshine.crypto.helper.bot.util.Messages;
 @ApplicationScoped
 @Named("orderItemButtonHandler")
 public class OrderItemButtonHandler implements ButtonHandler {
+
+    private final PriceAlertHandler priceAlertHandler;
+
+    @Inject
+    public OrderItemButtonHandler(PriceAlertHandler priceAlertHandler) {
+        this.priceAlertHandler = priceAlertHandler;
+    }
 
     @Override
     @Transactional
@@ -29,7 +37,10 @@ public class OrderItemButtonHandler implements ButtonHandler {
             extractKeyId(query.getData())
         );
 
-        order.ifPresent(PanacheEntityBase::delete);
+        order.ifPresent(o -> {
+            o.delete();
+            priceAlertHandler.remove(o.id);
+        });
 
         var sendMessage = sendMessageBuilder
             .text(Messages.ORDER_CANCELLATION_SUCCESS)

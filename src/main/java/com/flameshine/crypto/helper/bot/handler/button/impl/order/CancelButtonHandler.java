@@ -31,7 +31,7 @@ class CancelButtonHandler implements ButtonHandler {
         var chatId = message.getChatId();
         var account = Account.findByTelegramUserIdOptional(query.getFrom().getId());
 
-        Preconditions.checkState(account.isPresent(), "Account should be found at this stage");
+        Preconditions.checkState(account.isPresent(), "Account should be present at this stage");
 
         var orders = Order.findAllByAccount(account.get());
 
