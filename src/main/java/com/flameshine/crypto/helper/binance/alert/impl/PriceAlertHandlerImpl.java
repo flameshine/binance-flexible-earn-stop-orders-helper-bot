@@ -21,7 +21,8 @@ import com.flameshine.crypto.helper.binance.model.PriceAlert;
 import com.flameshine.crypto.helper.binance.alert.PriceAlertHandler;
 
 // TODO: load all orders from the database on startup (disaster recovery)
-// TODO: investigate if it makes sense to process alert slightly earlier before the target price is reached
+// TODO: investigate if it makes sense to process the alert slightly earlier before the target price is reached
+// TODO: consider switching to polling
 
 @ApplicationScoped
 @Slf4j
