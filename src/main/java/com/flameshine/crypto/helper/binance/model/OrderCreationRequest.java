@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import com.flameshine.crypto.helper.api.enums.OrderType;
 
 public record OrderCreationRequest(
-    KeyPair keyPair,
+    CredentialPair credentialPair,
     Order order
 ) {
     public record Order(
