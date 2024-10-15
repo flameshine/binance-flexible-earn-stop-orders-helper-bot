@@ -30,8 +30,8 @@ public class OrderCreatorImpl implements OrderCreator {
     public Optional<Problem> create(OrderCreationRequest request) {
 
         var client = new SpotClientImpl(
-            request.apiKey().apiKey(),
-            request.apiKey().secretKey(),
+            request.keyPair().apiKey(),
+            request.keyPair().secretKey(),
             url
         );
 

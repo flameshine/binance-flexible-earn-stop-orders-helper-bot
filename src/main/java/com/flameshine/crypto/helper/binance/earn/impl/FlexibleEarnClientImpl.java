@@ -35,8 +35,8 @@ public class FlexibleEarnClientImpl implements FlexibleEarnClient {
     public Optional<Problem> redeem(RedeemFlexibleProductRequest request) {
 
         var client = new SpotClientImpl(
-            request.apiKey().apiKey(),
-            request.apiKey().secretKey(),
+            request.keyPair().apiKey(),
+            request.keyPair().secretKey(),
             url
         );
 
