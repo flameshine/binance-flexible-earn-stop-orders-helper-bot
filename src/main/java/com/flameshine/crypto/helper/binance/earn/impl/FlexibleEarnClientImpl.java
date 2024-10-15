@@ -1,11 +1,14 @@
 package com.flameshine.crypto.helper.binance.earn.impl;
 
+import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
 import com.binance.connector.client.exceptions.BinanceClientException;
 import com.binance.connector.client.impl.SpotClientImpl;
+import com.binance.connector.client.impl.spot.SimpleEarn;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -41,31 +44,13 @@ public class FlexibleEarnClientImpl implements FlexibleEarnClient {
         );
 
         var simpleEarn = client.createSimpleEarn();
-
-        var productId = Stablecoin.fromValueOptional(request.asset())
-            .map(Stablecoin::getProductId);
-
-        if (productId.isEmpty()) {
-
-            var productIdFetcher = new ProductIdFetcher(simpleEarn, mapper);
-
-            try {
-                productId = productIdFetcher.fetch(request.asset());
-            } catch (BinanceApiException e) {
-                log.error(e.getMessage(), e);
-                return Optional.of(Problem.BINANCE_API_PROBLEM);
-            }
-        }
+        var productId = getProductId(request.asset(), simpleEarn);
 
         if (productId.isEmpty()) {
             return Optional.of(Problem.INSUFFICIENT_FUNDS);
         }
 
-        Map<String, Object> parameters = new LinkedHashMap<>();
-
-        parameters.put("productId", productId.get());
-        parameters.put("amount", request.amount());
-        parameters.put("type", "FAST");
+        var parameters = buildRedemptionParameters(productId.get(), request.amount());
 
         try {
             simpleEarn.redeemFlexibleProduct(parameters);
@@ -75,5 +60,33 @@ public class FlexibleEarnClientImpl implements FlexibleEarnClient {
         }
 
         return Optional.empty();
+    }
+
+    private Optional<String> getProductId(String asset, SimpleEarn simpleEarn) {
+
+        var productId = Stablecoin.fromValueOptional(asset)
+            .map(Stablecoin::getProductId);
+
+        if (productId.isEmpty()) {
+
+            var productIdFetcher = new ProductIdFetcher(simpleEarn, mapper);
+
+            try {
+                return productIdFetcher.fetch(asset);
+            } catch (BinanceApiException e) {
+                log.error(e.getMessage(), e);
+                return Optional.empty();
+            }
+        }
+
+        return productId;
+    }
+
+    private static Map<String, Object> buildRedemptionParameters(String productId, BigDecimal amount) {
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("productId", productId);
+        result.put("amount", amount);
+        result.put("type", "FAST");
+        return Collections.unmodifiableMap(result);
     }
 }
