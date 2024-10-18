@@ -1,5 +1,6 @@
 package com.flameshine.crypto.helper.binance.spot.impl;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -35,16 +36,7 @@ public class OrderCreatorImpl implements OrderCreator {
             url
         );
 
-        var order = request.order();
-
-        Map<String, Object> parameters = new LinkedHashMap<>();
-
-        parameters.put("symbol", order.pair().toUpperCase());
-        parameters.put("side", order.type().toString());
-        parameters.put("type", "LIMIT");
-        parameters.put("timeInForce", "GTC");
-        parameters.put("quantity", order.quantity());
-        parameters.put("price", order.price());
+        var parameters = buildTradeParameters(request.order());
 
         try {
             client.createTrade()
@@ -55,5 +47,16 @@ public class OrderCreatorImpl implements OrderCreator {
         }
 
         return Optional.empty();
+    }
+
+    private static Map<String, Object> buildTradeParameters(OrderCreationRequest.Order order) {
+        Map<String, Object> parameters = new LinkedHashMap<>();
+        parameters.put("symbol", order.pair().toUpperCase());
+        parameters.put("side", order.type().toString());
+        parameters.put("type", "LIMIT");
+        parameters.put("timeInForce", "GTC");
+        parameters.put("quantity", order.quantity());
+        parameters.put("price", order.price());
+        return Collections.unmodifiableMap(parameters);
     }
 }
