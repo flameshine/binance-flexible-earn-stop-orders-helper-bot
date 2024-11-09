@@ -37,6 +37,8 @@ dependencies {
     compileOnly("org.projectlombok:lombok:$lombokVersion")
     annotationProcessor("org.projectlombok:lombok:$lombokVersion")
     runtimeOnly("javax.xml.bind:jaxb-api:$jaxbApiVersion") // required by Quarkus
+    testImplementation("io.quarkus:quarkus-junit5")
+    testCompileOnly("org.projectlombok:lombok:$lombokVersion")
 }
 
 tasks.withType<JavaCompile> {

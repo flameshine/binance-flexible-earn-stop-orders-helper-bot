@@ -9,8 +9,8 @@ import com.flameshine.crypto.helper.binance.model.RedeemFlexibleProductRequest;
 public class RedeemFlexibleProductRequestMapper {
 
     public static RedeemFlexibleProductRequest map(Order input) {
-        var account = ApiKeyMapper.map(input.getAccount());
+        var credentialPair = CredentialPairMapper.map(input.getAccount());
         var amount = input.getQuantity().multiply(input.getPrice());
-        return new RedeemFlexibleProductRequest(account, input.getBase(), amount);
+        return new RedeemFlexibleProductRequest(credentialPair, input.getBase(), amount);
     }
 }
