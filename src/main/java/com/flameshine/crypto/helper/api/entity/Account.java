@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
@@ -39,7 +40,7 @@ public class Account extends PanacheEntity {
     @Column(name = "secret_key", unique = true, nullable = false)
     private String secretKey;
 
-    @OneToMany(mappedBy = "account")
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
     private Set<Order> orders;
 
     /*

@@ -3,9 +3,9 @@ package com.flameshine.crypto.helper.bot.handler.button.impl.order;
 import java.util.List;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 
@@ -17,14 +17,10 @@ import com.flameshine.crypto.helper.bot.util.Messages;
 
 @ApplicationScoped
 @Named("orderItemButtonHandler")
+@RequiredArgsConstructor
 public class OrderItemButtonHandler implements ButtonHandler {
 
     private final PriceAlertHandler priceAlertHandler;
-
-    @Inject
-    public OrderItemButtonHandler(PriceAlertHandler priceAlertHandler) {
-        this.priceAlertHandler = priceAlertHandler;
-    }
 
     @Override
     @Transactional

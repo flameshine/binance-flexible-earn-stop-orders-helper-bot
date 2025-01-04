@@ -6,9 +6,9 @@ import java.util.regex.Pattern;
 
 import com.google.common.base.Preconditions;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
@@ -24,16 +24,12 @@ import com.flameshine.crypto.helper.bot.util.Messages;
 
 @ApplicationScoped
 @Named("orderDetailsMessageHandler")
+@RequiredArgsConstructor
 public class OrderDetailsMessageHandler implements MessageHandler {
 
     private static final Pattern ORDER_DETAILS_PATTERN = Pattern.compile("(^[bs]):\\s(\\d+\\.?\\d*)\\s([A-Z]+)/([A-Z]+)\\s-\\s(\\d+\\.?\\d*)$");
 
     private final PriceAlertHandler priceAlertHandler;
-
-    @Inject
-    public OrderDetailsMessageHandler(PriceAlertHandler priceAlertHandler) {
-        this.priceAlertHandler = priceAlertHandler;
-    }
 
     @Override
     @Transactional
