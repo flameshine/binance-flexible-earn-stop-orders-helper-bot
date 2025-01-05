@@ -4,7 +4,7 @@
 
 <h2>Overview</h2>
 
-A bot designed to help users maximize their profits by allowing them to set up stop-limit orders while keeping their assets actively earning in Binance flexible earn products.
+Telegram bot designed to help users maximize their profits by allowing them to set up stop-limit orders while keeping their assets actively earning in Binance flexible earn products.
 This ensures that your assets continue to earn interest, even as the bot monitors market conditions and places your stop-limit orders when specified price levels are reached.
 
 <h2>Key features</h2>
